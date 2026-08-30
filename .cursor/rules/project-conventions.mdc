@@ -1,0 +1,92 @@
+---
+description: Quy ước chung project Flutter (FVM, điều hướng, Hive, user, auth, null safety)
+alwaysApply: true
+---
+
+# Quy ước chung project
+
+## FVM và Flutter
+
+- Project dùng **FVM** với **Flutter SDK 3.44.8** (theo `.fvm/fvm_config.json` / phiên bản đã pin).
+- Chạy mọi lệnh Flutter/Dart qua FVM, ví dụ: `fvm flutter pub get`, `fvm flutter run`, `fvm dart analyze` — không gọi `flutter`/`dart` global trừ khi có lý do đặc biệt và đã đồng bộ phiên bản.
+
+## Cấu trúc code
+
+- **Tách nhỏ hàm**: mỗi hàm một trách nhiệm rõ; tránh khối logic dài trong một chỗ.
+- **Tái sử dụng**: trích logic lặp thành helper/extension/service thay vì copy-paste.
+
+## Điều kiện nhiều nhánh
+
+- Ưu tiên sử dụng **`switch case`** thay vì chuỗi **`if/else if/else`** khi xử lý nhiều nhánh theo cùng một biến/giá trị.
+- Dùng `if/else` cho các điều kiện phạm vi (range), điều kiện kết hợp phức tạp, hoặc khi không phù hợp với `switch`.
+
+## Early return
+
+- Ưu tiên viết **`if` + `return` sớm** (guard clause) để thoát sớm trong hàm, thay vì dùng nhiều lớp **`if/else`** lồng nhau.
+- Mục tiêu là giữ luồng chính của hàm phẳng, dễ đọc và dễ bảo trì.
+
+## Text style (WLFont)
+
+- Luôn sử dụng **`WLFont`** cho mọi style của text (ví dụ: `WLFont.large.bold.onPrimaryColor`), không dùng style text rời rạc nếu đã có cấu hình tương đương trong `WLFont`.
+- Khi sửa bất kỳ file nào, phải **rà soát toàn bộ file đó** và chuyển các text style hiện có sang `WLFont`.
+- Việc chuyển đổi phải đảm bảo **giữ nguyên giao diện cũ** (font size, weight, color, line height, spacing, trạng thái hiển thị...).
+
+## Null safety (Dart)
+
+- **Không dùng** toán tử khẳng định non-null **`!`** trên giá trị có thể null (code mới và khi sửa file).
+- Xử lý null bằng **kiểm tra trước** (`if (x != null) { ... }`, early return) hoặc toán tử null-aware: **`?.`**, **`??`**, **`??=`** (và các cách an toàn tương đương).
+- Khi “chắc chắn” không null, ưu tiên **chỉnh kiểu / API** (non-nullable, `required`, khởi tạo hợp lệ) thay vì ép bằng `!`.
+
+## Điều hướng
+
+- Luôn điều hướng qua **`lib/routes/navigate.dart`** (API/route helpers của project), không tự `Navigator.push`/`Get.to` rải rác nếu đã có hàm tương ứng trong module đó.
+
+## Local storage (Hive)
+
+- Mọi thao tác local persistence qua Hive (open box, đọc/ghi pattern chuẩn của app) dùng **`lib/utils/managers/wl_hive_manager.dart`** — không mở Hive trực tiếp lung tung nếu manager đã bọc use case đó.
+
+## Thông tin user cơ bản
+
+- Đọc/ghi hoặc đồng bộ thông tin user cơ bản (profile/session fields app quản) qua **`lib/utils/managers/wl_user_manager.dart`**.
+
+## Authentication
+
+- Login, logout, token, session auth và luồng xác thực thống nhất qua **`lib/utils/managers/wl_auth_manager.dart`** — không nhân đôi logic auth ở repository/widget nếu manager đã có chỗ.
+
+
+# Đặt tên WL cho project (WizardLabyrinth)
+
+Áp dụng **mọi file và type mới** (không đổi tên hàng loạt code cũ trừ khi được yêu cầu).
+
+## File
+
+- Tên file Dart (và file nguồn khác trong `lib/`) phải bắt đầu bằng tiền tố **`wl_`** (chữ thường, gạch dưới).
+
+```text
+✅ wl_login_page.dart
+✅ wl_check_phone_auth_request.dart
+❌ login_page.dart
+❌ check_phone_auth_request.dart
+```
+
+## Class và kiểu đặt tên giống class
+
+- **Class**, **enum**, **extension**, **mixin**, **typedef** bật lên cấp file (public API) dùng tiền tố **`WL`** (PascalCase: hai chữ cái in hoa rồi tên phần còn lại).
+
+```dart
+// ✅
+class WLLoginPage extends StatelessWidget { ... }
+enum WLAuthStatus { ... }
+extension WLStringX on String { ... }
+mixin WLControllerMixin on GetxController { ... }
+
+// ❌
+class LoginPage { ... }
+class WlLoginPage { ... }
+```
+
+- Private (`_Private`) vẫn giữ quy ước Dart; nếu cần type public cho module, ưu tiên tên có tiền tố `WL`.
+
+## Gợi ý import / part
+
+File `wl_foo.dart` thường export một class chính `WLFoo` (hoặc nhiều type `WL*` cùng domain).
