@@ -21,11 +21,6 @@ dev_dependencies:
 flutter:
   uses-material-design: true
   assets:
-    - assets/images/
-    - assets/images/tiles/
-    - assets/images/characters/
-    - assets/images/slimes/
-    - assets/images/plants/
-    - assets/audio/
     - assets/maps/
-    - assets/atlas/
+    - assets/maps/mossy-tileset/
+    - assets/maps/tilesets/

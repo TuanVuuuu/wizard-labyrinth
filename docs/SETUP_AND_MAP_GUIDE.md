@@ -320,6 +320,8 @@ web/
 
 ## Phần B — Hướng dẫn vẽ map (Tiled)
 
+> Hướng dẫn chi tiết theo asset Mossy thật (catalog, Tiled, Flame): [`maps-game/`](./maps-game/README.md). Phần B dưới đây là bản rút gọn khi setup lần đầu.
+
 ### B1. Chuẩn thế giới (chốt 1 lần, không đổi)
 
 | Thông số | Giá trị đề xuất | Lý do |

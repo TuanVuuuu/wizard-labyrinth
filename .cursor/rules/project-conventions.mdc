@@ -54,6 +54,19 @@ alwaysApply: true
 - Login, logout, token, session auth và luồng xác thực thống nhất qua **`lib/utils/managers/wl_auth_manager.dart`** — không nhân đôi logic auth ở repository/widget nếu manager đã có chỗ.
 
 
+## Đặt tên — không đánh số thứ tự
+
+- **Không** đặt tên biến, file, class, enum, hàm… bằng số thứ tự (`1`, `2`, `3`…) để phân biệt các thứ cùng loại.
+- Đặt tên theo **vai trò / ý nghĩa** (domain, vị trí, trạng thái, loại), không theo thứ tự xuất hiện.
+
+```text
+✅ playerPosition, enemySpawnPoint, wl_login_page.dart, WLMossyTileset
+❌ item1, item2, player1, map2, wl_page_1.dart, WLButton2
+```
+
+- Ngoại lệ: số là **phần của khái niệm thật** (ví dụ `http2`, `sha256`, `level3` nếu đó là tên level trong game design) — không dùng số chỉ vì “cái thứ N”.
+
+
 # Đặt tên WL cho project (WizardLabyrinth)
 
 Áp dụng **mọi file và type mới** (không đổi tên hàng loạt code cũ trừ khi được yêu cầu).
