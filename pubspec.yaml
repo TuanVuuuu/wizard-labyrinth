@@ -11,6 +11,7 @@ dependencies:
   flame: ^1.19.0
   flame_tiled: ^1.21.0
   flame_audio: ^2.10.0
+  http: ^1.2.2
   shared_preferences: ^2.3.0
 
 dev_dependencies:

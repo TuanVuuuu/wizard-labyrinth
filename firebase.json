@@ -23,7 +23,7 @@
         ]
       },
       {
-        "source": "/flutter_bootstrap.js",
+        "source": "/wl_deploy_version.json",
         "headers": [
           {
             "key": "Cache-Control",
@@ -32,20 +32,28 @@
         ]
       },
       {
-        "source": "/flutter.js",
+        "source": "/assets/assets/maps/**",
         "headers": [
           {
             "key": "Cache-Control",
-            "value": "no-cache, no-store, must-revalidate"
+            "value": "no-cache, no-store, must-revalidate, max-age=0"
           }
         ]
       },
       {
-        "source": "/flutter_service_worker.js",
+        "source": "**",
         "headers": [
           {
             "key": "Cache-Control",
             "value": "no-cache, no-store, must-revalidate"
+          },
+          {
+            "key": "Pragma",
+            "value": "no-cache"
+          },
+          {
+            "key": "Expires",
+            "value": "0"
           }
         ]
       }

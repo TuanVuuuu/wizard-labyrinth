@@ -1,4 +1,5 @@
 import 'package:flame/components.dart';
+import 'package:flame/experimental.dart';
 import 'package:flame/game.dart';
 import 'package:flame_tiled/flame_tiled.dart';
 
@@ -42,84 +43,37 @@ class WLWizardGame extends FlameGame {
 
     await WLGameControls.mount(game: this, input: _playerInput);
 
-    _applyGameplayCamera(resetPosition: true);
+    _configureCamera(snapToWizard: true);
   }
 
   @override
   void onGameResize(Vector2 size) {
     super.onGameResize(size);
-    _applyGameplayCamera(resetPosition: false);
+    _configureCamera(snapToWizard: false);
   }
 
-  @override
-  void update(double dt) {
-    super.update(dt);
-    _followWizard();
-  }
-
-  void _followWizard() {
+  void _configureCamera({required bool snapToWizard}) {
     final map = _map;
-    final wizard = _wizard;
-    if (map == null || wizard == null) {
+    if (map == null || size.x <= 0 || size.y <= 0) {
       return;
     }
-    final zoom = camera.viewfinder.zoom;
-    if (zoom <= 0) {
-      return;
-    }
-    final halfView = size / zoom / 2;
-    final current = camera.viewfinder.position;
-    camera.viewfinder.position = Vector2(
-      _clampCamAxis(wizard.position.x, halfView.x, map.size.x),
-      _clampCamAxis(current.y, halfView.y, map.size.y),
-    );
-  }
 
-  void _applyGameplayCamera({required bool resetPosition}) {
-    final map = _map;
-    if (map == null) {
-      return;
-    }
-    final view = size;
-    if (view.x <= 0 || view.y <= 0) {
-      return;
-    }
     camera.viewfinder.anchor = Anchor.center;
-    camera.viewfinder.zoom = view.x /
-        (WLMapConstants.tileSize * WLMapConstants.visibleTilesX);
-    if (resetPosition) {
-      final wizard = _wizard;
-      final halfViewX = view.x / (camera.viewfinder.zoom * 2);
-      final targetX = wizard?.position.x ?? halfViewX;
-      camera.viewfinder.position = Vector2(
-        _clampCamAxis(targetX, halfViewX, map.size.x),
-        map.size.y / 2,
-      );
-    }
-    _clampCameraToMap();
-  }
+    camera.viewfinder.zoom =
+        size.x / (WLMapConstants.tileSize * WLMapConstants.visibleTilesX);
 
-  void _clampCameraToMap() {
-    final map = _map;
-    if (map == null) {
-      return;
-    }
-    final zoom = camera.viewfinder.zoom;
-    if (zoom <= 0) {
-      return;
-    }
-    final halfView = size / zoom / 2;
-    final pos = camera.viewfinder.position;
-    camera.viewfinder.position = Vector2(
-      _clampCamAxis(pos.x, halfView.x, map.size.x),
-      _clampCamAxis(pos.y, halfView.y, map.size.y),
+    camera.setBounds(
+      Rectangle.fromLTWH(0, 0, map.size.x, map.size.y),
+      considerViewport: true,
     );
-  }
 
-  double _clampCamAxis(double value, double halfView, double mapExtent) {
-    if (mapExtent <= halfView * 2) {
-      return mapExtent / 2;
+    final wizard = _wizard;
+    if (wizard == null) {
+      return;
     }
-    return value.clamp(halfView, mapExtent - halfView);
+
+    if (snapToWizard) {
+      camera.follow(wizard, snap: true);
+    }
   }
 }

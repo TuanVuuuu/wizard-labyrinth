@@ -21,11 +21,11 @@ class WLCharacterConstants {
   /// Scale cả frame gốc lên 2× tile. Body thực ≈ 556px (~109% tile 512).
   static const double displaySize = frameSize * 2;
 
-  static const double gravity = 2800;
+  static const double gravity = 2800; // Trọng lực
   static const double maxFallSpeed = 2000;
   static const double moveSpeed = 980;
-  static const double jumpVelocity = 1900;
-  static const int maxJumpCount = 2;
+  static const double jumpVelocity = 2200; // Lực nhảy mỗi lần // 1900
+  static const int maxJumpCount = 2; // Số lần nhảy tối đa
   static const double joystickDeadZone = 0.12;
   static const double jumpBufferSeconds = 0.12;
 
