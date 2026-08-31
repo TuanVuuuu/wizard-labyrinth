@@ -5,3 +5,11 @@
 build/
 *.dill
 *.cache
+
+# Firebase
+.firebase/
+firebase-debug.log
+firebase-debug.*.log
+
+# Dart
+.dart_tool/
