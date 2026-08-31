@@ -8,6 +8,7 @@ import 'characters/wl_blue_wizard.dart';
 import 'input/wl_game_controls.dart';
 import 'input/wl_player_input.dart';
 import 'levels/wl_level_loader.dart';
+import 'overlays/wl_game_overlay_id.dart';
 import 'world/wl_cavern_atmosphere.dart';
 
 class WLWizardGame extends FlameGame {
@@ -75,5 +76,44 @@ class WLWizardGame extends FlameGame {
     if (snapToWizard) {
       camera.follow(wizard, snap: true);
     }
+  }
+
+  void pauseGame() {
+    if (paused) {
+      return;
+    }
+    _playerInput.reset();
+    pauseEngine();
+    overlays.remove(WLGameOverlayId.hud);
+    overlays.add(WLGameOverlayId.pause);
+  }
+
+  void resumeGame() {
+    overlays.removeAll(const [
+      WLGameOverlayId.exitConfirm,
+      WLGameOverlayId.pause,
+    ]);
+    overlays.add(WLGameOverlayId.hud);
+    resumeEngine();
+  }
+
+  void openExitConfirm() {
+    overlays.add(WLGameOverlayId.exitConfirm, priority: 1);
+  }
+
+  void closeExitConfirm() {
+    overlays.remove(WLGameOverlayId.exitConfirm);
+  }
+
+  void handleSystemBack() {
+    if (overlays.isActive(WLGameOverlayId.exitConfirm)) {
+      closeExitConfirm();
+      return;
+    }
+    if (overlays.isActive(WLGameOverlayId.pause)) {
+      resumeGame();
+      return;
+    }
+    pauseGame();
   }
 }

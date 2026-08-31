@@ -23,4 +23,9 @@ class WLPlayerInput {
   void clearJumpRequest() {
     jumpBufferRemaining = 0;
   }
+
+  void reset() {
+    horizontal = 0;
+    jumpBufferRemaining = 0;
+  }
 }

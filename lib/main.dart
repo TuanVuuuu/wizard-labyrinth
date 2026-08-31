@@ -1,7 +1,9 @@
-import 'package:flame/game.dart';
 import 'package:flutter/material.dart';
 
-import 'game/wl_wizard_game.dart';
+import 'core/wl_colors.dart';
+import 'pages/wl_game_page.dart';
+import 'pages/wl_home_page.dart';
+import 'routes/navigate.dart';
 
 void main() {
   WidgetsFlutterBinding.ensureInitialized();
@@ -19,26 +21,14 @@ class WLApp extends StatelessWidget {
       theme: ThemeData(
         brightness: Brightness.dark,
         colorScheme: ColorScheme.fromSeed(
-          seedColor: const Color(0xFF1A6A78),
+          seedColor: WLColors.teal,
           brightness: Brightness.dark,
         ),
       ),
-      home: const Scaffold(
-        body: WLGamePage(),
-      ),
-    );
-  }
-}
-
-class WLGamePage extends StatelessWidget {
-  const WLGamePage({super.key});
-
-  @override
-  Widget build(BuildContext context) {
-    return GameWidget(
-      game: WLWizardGame(),
-      backgroundBuilder: (context) {
-        return const ColoredBox(color: Color(0xFF061822));
+      initialRoute: WLNavigate.home,
+      routes: {
+        WLNavigate.home: (_) => const WLHomePage(),
+        WLNavigate.game: (_) => const WLGamePage(),
       },
     );
   }
