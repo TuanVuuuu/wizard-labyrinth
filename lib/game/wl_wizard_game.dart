@@ -2,19 +2,29 @@ import 'package:flame/components.dart';
 import 'package:flame/experimental.dart';
 import 'package:flame/game.dart';
 import 'package:flame_tiled/flame_tiled.dart';
+import 'package:flutter/foundation.dart';
 
+import '../core/wl_character_constants.dart';
 import '../core/wl_map_constants.dart';
 import 'characters/wl_blue_wizard.dart';
 import 'input/wl_game_controls.dart';
 import 'input/wl_player_input.dart';
 import 'levels/wl_level_loader.dart';
+import 'levels/wl_player_spawn.dart';
 import 'overlays/wl_game_overlay_id.dart';
 import 'world/wl_cavern_atmosphere.dart';
 
 class WLWizardGame extends FlameGame {
   TiledComponent? _map;
   WLBlueWizard? _wizard;
+  WLPlayerSpawn? _playerSpawn;
+  bool _isPlayerDead = false;
+  int _deathSequenceToken = 0;
+  final ValueNotifier<int> livesNotifier =
+      ValueNotifier(WLCharacterConstants.startingLives);
   final WLPlayerInput _playerInput = WLPlayerInput();
+
+  int get livesRemaining => livesNotifier.value;
 
   @override
   Future<void> onLoad() async {
@@ -33,6 +43,7 @@ class WLWizardGame extends FlameGame {
 
     final collisionMap = WLLevelLoader.buildCollisionMap(map);
     final spawnPoint = WLLevelLoader.readPlayerSpawn(map);
+    _playerSpawn = spawnPoint;
     final wizard = await WLBlueWizard.spawn(
       game: this,
       collisionMap: collisionMap,
@@ -45,6 +56,103 @@ class WLWizardGame extends FlameGame {
     await WLGameControls.mount(game: this, input: _playerInput);
 
     _configureCamera(snapToWizard: true);
+  }
+
+  @override
+  void onDispose() {
+    _deathSequenceToken++;
+    livesNotifier.dispose();
+    super.onDispose();
+  }
+
+  @override
+  void update(double dt) {
+    super.update(dt);
+    _checkPlayerFallDeath();
+  }
+
+  void _checkPlayerFallDeath() {
+    if (_isPlayerDead) {
+      return;
+    }
+
+    final map = _map;
+    final wizard = _wizard;
+    if (map == null || wizard == null) {
+      return;
+    }
+
+    final deathY = map.size.y +
+        WLMapConstants.tileSize * WLMapConstants.deathFallBufferTiles;
+    if (wizard.position.y > deathY) {
+      onPlayerDeath();
+    }
+  }
+
+  void onPlayerDeath() {
+    if (_isPlayerDead) {
+      return;
+    }
+
+    _isPlayerDead = true;
+    _playerInput.reset();
+    pauseEngine();
+    livesNotifier.value -= 1;
+
+    final token = ++_deathSequenceToken;
+    Future.delayed(
+      Duration(
+        milliseconds:
+            (WLCharacterConstants.deathRespawnDelaySeconds * 1000).round(),
+      ),
+      () => _completeDeathSequence(token),
+    );
+  }
+
+  void _completeDeathSequence(int token) {
+    if (token != _deathSequenceToken) {
+      return;
+    }
+
+    if (livesNotifier.value <= 0) {
+      _showGameOver();
+      return;
+    }
+
+    _respawnAtSpawn();
+    _isPlayerDead = false;
+    resumeEngine();
+  }
+
+  void _showGameOver() {
+    overlays.remove(WLGameOverlayId.hud);
+    overlays.removeAll(const [
+      WLGameOverlayId.pause,
+      WLGameOverlayId.exitConfirm,
+    ]);
+    overlays.add(WLGameOverlayId.death);
+  }
+
+  void _respawnAtSpawn() {
+    final spawn = _playerSpawn;
+    final wizard = _wizard;
+    if (spawn == null || wizard == null) {
+      return;
+    }
+
+    _playerInput.reset();
+    wizard.respawn(spawn);
+    _configureCamera(snapToWizard: true);
+  }
+
+  void restartAfterDeath() {
+    _deathSequenceToken++;
+    livesNotifier.value = WLCharacterConstants.startingLives;
+    _isPlayerDead = false;
+    _respawnAtSpawn();
+    overlays.remove(WLGameOverlayId.death);
+    overlays.add(WLGameOverlayId.hud);
+    resumeEngine();
   }
 
   @override
@@ -79,7 +187,7 @@ class WLWizardGame extends FlameGame {
   }
 
   void pauseGame() {
-    if (paused) {
+    if (paused || _isPlayerDead) {
       return;
     }
     _playerInput.reset();
@@ -106,6 +214,9 @@ class WLWizardGame extends FlameGame {
   }
 
   void handleSystemBack() {
+    if (overlays.isActive(WLGameOverlayId.death)) {
+      return;
+    }
     if (overlays.isActive(WLGameOverlayId.exitConfirm)) {
       closeExitConfirm();
       return;

@@ -37,4 +37,7 @@ class WLCharacterConstants {
   /// Vị trí spawn mặc định khi map không có `player_spawn`.
   static const double defaultSpawnTileX = 2.5;
   static const double defaultSpawnTileY = 8;
+
+  static const int startingLives = 3;
+  static const double deathRespawnDelaySeconds = 2;
 }

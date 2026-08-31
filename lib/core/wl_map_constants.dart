@@ -17,4 +17,7 @@ class WLMapConstants {
   /// Sheet đồi rêu xa (không collision). Dùng cho stamp nền `bg_far` /
   /// parallax trong `WLCavernAtmosphere`, không phải địa hình `ground`.
   static const String hillsSheet = 'mossy-tileset/Mossy - MossyHills.png';
+
+  /// Khoảng đệm dưới đáy map (tính theo tile) trước khi coi là rơi chết.
+  static const double deathFallBufferTiles = 0.25;
 }

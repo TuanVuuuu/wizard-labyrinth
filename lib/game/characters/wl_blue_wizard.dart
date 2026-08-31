@@ -104,6 +104,15 @@ class WLBlueWizard extends SpriteAnimationGroupComponent<WLWizardAnimState> {
 
   int get facing => _facing;
 
+  void respawn(WLPlayerSpawn spawnPoint) {
+    position.setFrom(spawnPoint.position);
+    _velocity.setZero();
+    _grounded = false;
+    _jumpsUsed = 0;
+    setFacing(spawnPoint.facing);
+    play(WLWizardAnimState.idle);
+  }
+
   void _applyInput() {
     final horizontal = _input.horizontal;
     if (horizontal.abs() < WLCharacterConstants.joystickDeadZone) {

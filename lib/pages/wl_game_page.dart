@@ -2,6 +2,7 @@ import 'package:flame/game.dart';
 import 'package:flutter/material.dart';
 
 import '../core/wl_colors.dart';
+import '../game/overlays/wl_death_overlay.dart';
 import '../game/overlays/wl_exit_confirm_overlay.dart';
 import '../game/overlays/wl_game_hud.dart';
 import '../game/overlays/wl_game_overlay_id.dart';
@@ -50,6 +51,7 @@ class _WLGamePageState extends State<WLGamePage> {
       WLGameOverlayId.pause: (context, game) => WLPauseOverlay(game: game),
       WLGameOverlayId.exitConfirm: (context, game) =>
           WLExitConfirmOverlay(game: game),
+      WLGameOverlayId.death: (context, game) => WLDeathOverlay(game: game),
     };
   }
 

@@ -11,4 +11,5 @@ class WLColors {
   static const Color overlayScrim = Color(0xCC050D12);
   static const Color panel = Color(0xF2122A36);
   static const Color panelBorder = Color(0x59D8F4F8);
+  static const Color lifeHeart = Color(0xFFE53935);
 }
