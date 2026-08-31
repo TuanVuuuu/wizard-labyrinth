@@ -3,13 +3,17 @@ import 'package:flame/game.dart';
 
 import '../../core/wl_character_constants.dart';
 import '../levels/wl_player_spawn.dart';
+import '../physics/wl_tile_collision_map.dart';
 import 'wl_wizard_animations.dart';
 
 class WLBlueWizard extends SpriteAnimationGroupComponent<WLWizardAnimState> {
   WLBlueWizard({
     required Map<WLWizardAnimState, SpriteAnimation> animations,
     required Vector2 position,
-  }) : super(
+    required WLTileCollisionMap collisionMap,
+  })  : _collisionMap = collisionMap,
+        _velocity = Vector2.zero(),
+        super(
           animations: animations,
           current: WLWizardAnimState.idle,
           position: position,
@@ -18,10 +22,17 @@ class WLBlueWizard extends SpriteAnimationGroupComponent<WLWizardAnimState> {
           priority: 10,
         );
 
+  final WLTileCollisionMap _collisionMap;
+  final Vector2 _velocity;
+  bool _grounded = false;
+
   int _facing = 1;
+
+  bool get isGrounded => _grounded;
 
   static Future<WLBlueWizard> spawn({
     required FlameGame game,
+    required WLTileCollisionMap collisionMap,
     WLPlayerSpawn? spawnPoint,
   }) async {
     final animations = await WLWizardAnimations.loadAll();
@@ -29,9 +40,33 @@ class WLBlueWizard extends SpriteAnimationGroupComponent<WLWizardAnimState> {
     final wizard = WLBlueWizard(
       animations: animations,
       position: resolved.position,
+      collisionMap: collisionMap,
     );
     wizard.setFacing(resolved.facing);
     return wizard;
+  }
+
+  @override
+  void update(double dt) {
+    super.update(dt);
+
+    final result = WLPlatformerPhysics.step(
+      position: position,
+      velocity: _velocity,
+      grounded: _grounded,
+      hitboxWidth: WLCharacterConstants.hitboxWidth,
+      hitboxHeight: WLCharacterConstants.hitboxHeight,
+      dt: dt,
+      solids: _collisionMap.solids,
+      gravity: WLCharacterConstants.gravity,
+      maxFallSpeed: WLCharacterConstants.maxFallSpeed,
+      skin: WLCharacterConstants.collisionSkin,
+    );
+
+    position.setFrom(result.position);
+    _velocity.setFrom(result.velocity);
+    _grounded = result.grounded;
+    _syncAnimation();
   }
 
   void play(WLWizardAnimState state) {
@@ -54,4 +89,16 @@ class WLBlueWizard extends SpriteAnimationGroupComponent<WLWizardAnimState> {
   }
 
   int get facing => _facing;
+
+  void _syncAnimation() {
+    if (_grounded) {
+      play(WLWizardAnimState.idle);
+      return;
+    }
+    if (_velocity.y < 0) {
+      play(WLWizardAnimState.jump);
+      return;
+    }
+    play(WLWizardAnimState.idle);
+  }
 }

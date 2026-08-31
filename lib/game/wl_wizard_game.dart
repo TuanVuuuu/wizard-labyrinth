@@ -26,8 +26,13 @@ class WLWizardGame extends FlameGame with PanDetector {
       mapImages: WLLevelLoader.mapImages,
     );
 
+    final collisionMap = WLLevelLoader.buildCollisionMap(map);
     final spawnPoint = WLLevelLoader.readPlayerSpawn(map);
-    final wizard = await WLBlueWizard.spawn(game: this, spawnPoint: spawnPoint);
+    final wizard = await WLBlueWizard.spawn(
+      game: this,
+      collisionMap: collisionMap,
+      spawnPoint: spawnPoint,
+    );
     await world.add(wizard);
 
     _applyGameplayCamera(resetPosition: true);

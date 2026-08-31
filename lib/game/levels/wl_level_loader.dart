@@ -3,6 +3,7 @@ import 'package:flame/components.dart';
 import 'package:flame_tiled/flame_tiled.dart';
 
 import '../../core/wl_map_constants.dart';
+import '../physics/wl_tile_collision_map.dart';
 import 'wl_player_spawn.dart';
 
 class WLLevelLoader {
@@ -21,5 +22,9 @@ class WLLevelLoader {
 
   static WLPlayerSpawn readPlayerSpawn(TiledComponent map) {
     return WLPlayerSpawnReader.read(map);
+  }
+
+  static WLTileCollisionMap buildCollisionMap(TiledComponent map) {
+    return WLTileCollisionMap.fromTiledMap(map);
   }
 }

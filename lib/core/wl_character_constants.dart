@@ -21,7 +21,15 @@ class WLCharacterConstants {
   /// Scale cả frame gốc lên 2× tile. Body thực ≈ 556px (~109% tile 512).
   static const double displaySize = frameSize * 2;
 
-  /// Vị trí spawn mặc định trên nền map Zone 1 (tile row 7, cột 2).
+  static const double gravity = 2800;
+  static const double maxFallSpeed = 2000;
+
+  /// Hitbox hẹp hơn sprite (fair platforming).
+  static const double hitboxWidth = displaySize * 0.28;
+  static const double hitboxHeight = displaySize * 0.55;
+  static const double collisionSkin = 1.5;
+
+  /// Vị trí spawn mặc định khi map không có `player_spawn`.
   static const double defaultSpawnTileX = 2.5;
   static const double defaultSpawnTileY = 8;
 }
