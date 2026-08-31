@@ -3,6 +3,7 @@ import 'package:flame/components.dart';
 import 'package:flame_tiled/flame_tiled.dart';
 
 import '../../core/wl_map_constants.dart';
+import 'wl_player_spawn.dart';
 
 class WLLevelLoader {
   WLLevelLoader._();
@@ -16,5 +17,9 @@ class WLLevelLoader {
       prefix: WLMapConstants.mapsPrefix,
       images: mapImages,
     );
+  }
+
+  static WLPlayerSpawn readPlayerSpawn(TiledComponent map) {
+    return WLPlayerSpawnReader.read(map);
   }
 }

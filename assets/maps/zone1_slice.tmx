@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<map version="1.10" tiledversion="1.12.2" orientation="orthogonal" renderorder="right-down" width="36" height="11" tilewidth="512" tileheight="512" infinite="0" backgroundcolor="#061822" nextlayerid="17" nextobjectid="11">
+<map version="1.10" tiledversion="1.12.2" orientation="orthogonal" renderorder="right-down" width="36" height="11" tilewidth="512" tileheight="512" infinite="0" backgroundcolor="#061822" nextlayerid="17" nextobjectid="12">
  <properties>
   <property name="bgm" value="zone1_loop"/>
   <property name="zone_id" value="zone1"/>
@@ -178,7 +178,13 @@
 0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0
 </data>
  </layer>
- <objectgroup id="7" name="obj_spawn"/>
+ <objectgroup id="7" name="obj_spawn">
+  <object id="5" name="player_start" type="player_spawn" x="1247" y="3500" width="64" height="64">
+   <properties>
+    <property name="facing" type="int" value="1"/>
+   </properties>
+  </object>
+ </objectgroup>
  <objectgroup id="8" name="obj_checkpoints"/>
  <objectgroup id="9" name="obj_spikes"/>
  <objectgroup id="10" name="obj_hazards"/>

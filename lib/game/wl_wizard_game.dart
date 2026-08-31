@@ -5,6 +5,7 @@ import 'package:flame_tiled/flame_tiled.dart';
 
 import '../core/wl_map_constants.dart';
 import 'levels/wl_level_loader.dart';
+import 'characters/wl_blue_wizard.dart';
 import 'world/wl_cavern_atmosphere.dart';
 
 class WLWizardGame extends FlameGame with PanDetector {
@@ -24,6 +25,10 @@ class WLWizardGame extends FlameGame with PanDetector {
       worldSize: map.size,
       mapImages: WLLevelLoader.mapImages,
     );
+
+    final spawnPoint = WLLevelLoader.readPlayerSpawn(map);
+    final wizard = await WLBlueWizard.spawn(game: this, spawnPoint: spawnPoint);
+    await world.add(wizard);
 
     _applyGameplayCamera(resetPosition: true);
   }
