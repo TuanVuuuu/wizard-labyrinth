@@ -156,7 +156,7 @@ class WLPlatformerPhysics {
       skin: skin,
     );
 
-    if (!nextGrounded) {
+    if (!nextGrounded || nextVelocity.y.abs() > 0.5) {
       final vertical = _resolveAxis(
         position: nextPosition,
         delta: nextVelocity.y * dt,
@@ -170,6 +170,14 @@ class WLPlatformerPhysics {
       nextGrounded = vertical.grounded;
       if (vertical.blocked) {
         nextVelocity.y = 0;
+      } else if (!vertical.grounded) {
+        nextGrounded = _isGrounded(
+          position: nextPosition,
+          hitboxWidth: hitboxWidth,
+          hitboxHeight: hitboxHeight,
+          solids: solids,
+          skin: skin,
+        );
       }
     }
 

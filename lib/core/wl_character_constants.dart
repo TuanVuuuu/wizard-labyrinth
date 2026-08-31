@@ -23,6 +23,11 @@ class WLCharacterConstants {
 
   static const double gravity = 2800;
   static const double maxFallSpeed = 2000;
+  static const double moveSpeed = 980;
+  static const double jumpVelocity = 1900;
+  static const int maxJumpCount = 2;
+  static const double joystickDeadZone = 0.12;
+  static const double jumpBufferSeconds = 0.12;
 
   /// Hitbox hẹp hơn sprite (fair platforming).
   static const double hitboxWidth = displaySize * 0.28;
