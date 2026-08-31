@@ -5,7 +5,8 @@ import 'package:flame/cache.dart';
 import 'package:flame/components.dart';
 import 'package:flame/game.dart';
 
-import '../../core/wl_map_constants.dart';
+import '../../core/wl_colors.dart';
+import 'wl_far_view.dart';
 
 class WLCavernAtmosphere {
   WLCavernAtmosphere._();
@@ -16,57 +17,43 @@ class WLCavernAtmosphere {
     required Images mapImages,
   }) async {
     game.camera.backdrop.add(WLCavernSky());
-    await _addDistantHills(game.world, worldSize, mapImages);
-    await game.world.add(WLMoteField(worldSize: worldSize));
+    await WLFarView.mount(
+      world: game.world,
+      worldSize: worldSize,
+      mapImages: mapImages,
+    );
+    await game.world.add(
+      WLMoteField(
+        worldSize: worldSize,
+        count: 36,
+        minRadius: 8,
+        maxRadius: 22,
+        minOpacity: 0.10,
+        maxOpacity: 0.28,
+        minDrift: 6,
+        maxDrift: 16,
+        seed: 3,
+        priority: -22,
+      ),
+    );
+    await game.world.add(
+      WLMoteField(
+        worldSize: worldSize,
+        count: 48,
+        minRadius: 2.5,
+        maxRadius: 7,
+        minOpacity: 0.14,
+        maxOpacity: 0.40,
+        minDrift: 12,
+        maxDrift: 30,
+        seed: 11,
+        priority: 8,
+      ),
+    );
     game.camera.viewport.add(WLVignette());
-  }
-  
-  // Thêm đồi rêu xa vào background
-  static Future<void> _addDistantHills(
-    World world,
-    Vector2 worldSize,
-    Images mapImages,
-  ) async {
-    final sheet = await mapImages.load(WLMapConstants.hillsSheet);
-    final stamps = <WLHillStamp>[
-      WLHillStamp(
-        image: sheet,
-        srcPosition: Vector2(632, 608),
-        srcSize: Vector2(1265, 865),
-        position: Vector2(worldSize.x * 0.50, worldSize.y * 0.42),
-        scale: Vector2.all(2.4),
-        opacity: 0.22,
-      ),
-      WLHillStamp(
-        image: sheet,
-        srcPosition: Vector2(48, 1496),
-        srcSize: Vector2(1345, 481),
-        position: Vector2(worldSize.x * 0.22, worldSize.y * 0.38),
-        scale: Vector2.all(1.9),
-        opacity: 0.28,
-      ),
-      WLHillStamp(
-        image: sheet,
-        srcPosition: Vector2(680, 24),
-        srcSize: Vector2(1169, 513),
-        position: Vector2(worldSize.x * 0.78, worldSize.y * 0.34),
-        scale: Vector2.all(1.7),
-        opacity: 0.24,
-      ),
-      WLHillStamp(
-        image: sheet,
-        srcPosition: Vector2(56, 560),
-        srcSize: Vector2(401, 385),
-        position: Vector2(worldSize.x * 0.36, worldSize.y * 0.18),
-        scale: Vector2.all(2.2),
-        opacity: 0.18,
-      ),
-    ];
-    await world.addAll(stamps);
   }
 }
 
-// Thêm sky background
 class WLCavernSky extends Component with HasGameReference<FlameGame> {
   @override
   int get priority => -100;
@@ -77,22 +64,26 @@ class WLCavernSky extends Component with HasGameReference<FlameGame> {
     if (size.x <= 0 || size.y <= 0) {
       return;
     }
-    final paint = Paint()
-      ..shader = Gradient.radial(
-        Offset(size.x * 0.5, size.y * 0.42),
-        size.x * 0.72,
-        const [
-          Color(0xFF2A8A96),
-          Color(0xFF12485A),
-          Color(0xFF071820),
-        ],
-        const [0.0, 0.42, 1.0],
-      );
-    canvas.drawRect(Offset.zero & Size(size.x, size.y), paint);
+
+    final center = Offset(size.x * 0.5, size.y * 0.42);
+    canvas.drawRect(
+      Offset.zero & Size(size.x, size.y),
+      Paint()
+        ..shader = Gradient.radial(
+          center,
+          size.x * 0.78,
+          const [
+            WLColors.cavernMistGlow,
+            WLColors.cavernGlow,
+            WLColors.cavernMid,
+            WLColors.cavernDeep,
+          ],
+          const [0.0, 0.28, 0.62, 1.0],
+        ),
+    );
   }
 }
 
-// Thêm vignette effect
 class WLVignette extends Component with HasGameReference<FlameGame> {
   @override
   int get priority => 1000;
@@ -103,63 +94,54 @@ class WLVignette extends Component with HasGameReference<FlameGame> {
     if (size.x <= 0 || size.y <= 0) {
       return;
     }
-    final paint = Paint()
-      ..shader = Gradient.radial(
-        Offset(size.x * 0.5, size.y * 0.48),
-        size.x * 0.74,
-        const [
-          Color(0x00000000),
-          Color(0xA0051018),
-        ],
-        const [0.48, 1.0],
-      );
-    canvas.drawRect(Offset.zero & Size(size.x, size.y), paint);
+
+    canvas.drawRect(
+      Offset.zero & Size(size.x, size.y),
+      Paint()
+        ..shader = Gradient.radial(
+          Offset(size.x * 0.5, size.y * 0.48),
+          size.x * 0.76,
+          const [
+            Color(0x00000000),
+            Color(0xB0051018),
+          ],
+          const [0.42, 1.0],
+        ),
+    );
   }
 }
 
-// Thêm stamp đồi rêu xa
-class WLHillStamp extends SpriteComponent {
-  WLHillStamp({
-    required Image image,
-    required Vector2 srcPosition,
-    required Vector2 srcSize,
-    required Vector2 position,
-    required Vector2 scale,
-    required double opacity,
-  }) : super(
-          sprite: Sprite(
-            image,
-            srcPosition: srcPosition,
-            srcSize: srcSize,
-          ),
-          size: srcSize,
-          position: position,
-          scale: scale,
-          anchor: Anchor.center,
-          priority: -20,
-        ) {
-    this.opacity = opacity;
-  }
-}
-
-
-// Thêm môt field vào background
 class WLMoteField extends Component {
   WLMoteField({
     required this.worldSize,
     this.count = 56,
-  }) : super(priority: 8);
+    this.minRadius = 3.5,
+    this.maxRadius = 10.5,
+    this.minOpacity = 0.12,
+    this.maxOpacity = 0.47,
+    this.minDrift = 12,
+    this.maxDrift = 40,
+    int seed = 11,
+    int priority = 8,
+  })  : _rng = Random(seed),
+        super(priority: priority);
 
   final Vector2 worldSize;
   final int count;
-  final Random _rng = Random(11);
+  final double minRadius;
+  final double maxRadius;
+  final double minOpacity;
+  final double maxOpacity;
+  final double minDrift;
+  final double maxDrift;
+  final Random _rng;
   final List<_WLMote> _motes = [];
   final Paint _paint = Paint()..blendMode = BlendMode.plus;
 
   @override
   Future<void> onLoad() async {
     for (var i = 0; i < count; i++) {
-      _motes.add(_WLMote.spawn(_rng, worldSize));
+      _motes.add(_WLMote.spawn(this, _rng));
     }
   }
 
@@ -184,7 +166,6 @@ class WLMoteField extends Component {
   }
 }
 
-// Thêm môt field vào background
 class _WLMote {
   _WLMote({
     required this.x,
@@ -195,13 +176,16 @@ class _WLMote {
     required this.sway,
   });
 
-  factory _WLMote.spawn(Random rng, Vector2 worldSize) {
+  factory _WLMote.spawn(WLMoteField field, Random rng) {
     return _WLMote(
-      x: rng.nextDouble() * worldSize.x,
-      y: rng.nextDouble() * worldSize.y,
-      radius: 3.5 + rng.nextDouble() * 7,
-      opacity: 0.12 + rng.nextDouble() * 0.35,
-      drift: 12 + rng.nextDouble() * 28,
+      x: rng.nextDouble() * field.worldSize.x,
+      y: rng.nextDouble() * field.worldSize.y,
+      radius: field.minRadius +
+          rng.nextDouble() * (field.maxRadius - field.minRadius),
+      opacity: field.minOpacity +
+          rng.nextDouble() * (field.maxOpacity - field.minOpacity),
+      drift: field.minDrift +
+          rng.nextDouble() * (field.maxDrift - field.minDrift),
       sway: (rng.nextDouble() - 0.5) * 10,
     );
   }

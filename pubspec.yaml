@@ -26,5 +26,9 @@ flutter:
   assets:
     - assets/maps/
     - assets/maps/mossy-tileset/
+    - assets/maps/mossy-tileset/slices/spikes/
+    - assets/maps/mossy-tileset/slices/rocks/
+    - assets/maps/mossy-tileset/slices/trunk/
+    - assets/maps/mossy-tileset/slices/plants/
     - assets/maps/tilesets/
     - assets/atlas/

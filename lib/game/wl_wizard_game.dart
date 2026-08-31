@@ -30,10 +30,12 @@ class WLWizardGame extends FlameGame {
   Future<void> onLoad() async {
     await super.onLoad();
 
-    final map = await WLLevelLoader.loadZone1Slice();
+    final loadedMap = await WLLevelLoader.loadZone1Slice();
+    final map = loadedMap.map;
     _map = map;
-    map.priority = 0;
-    await world.add(map);
+    for (final visual in loadedMap.visuals) {
+      await world.add(visual);
+    }
 
     await WLCavernAtmosphere.mount(
       game: this,
