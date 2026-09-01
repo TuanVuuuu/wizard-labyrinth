@@ -49,7 +49,6 @@ class WLWizardGame extends FlameGame {
     await WLCavernAtmosphere.mount(
       game: this,
       worldSize: map.size,
-      mapImages: WLLevelLoader.mapImages,
     );
 
     final collisionMap = WLLevelLoader.buildCollisionMap(map);
@@ -218,8 +217,7 @@ class WLWizardGame extends FlameGame {
     }
 
     camera.viewfinder.anchor = Anchor.center;
-    camera.viewfinder.zoom =
-        size.x / (WLMapConstants.tileSize * WLMapConstants.visibleTilesX);
+    camera.viewfinder.zoom = size.x / WLMapConstants.visibleWorldWidth;
 
     camera.setBounds(
       Rectangle.fromLTWH(0, 0, map.size.x, map.size.y),

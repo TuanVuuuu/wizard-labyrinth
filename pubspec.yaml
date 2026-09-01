@@ -24,6 +24,7 @@ dev_dependencies:
 flutter:
   uses-material-design: true
   assets:
+    - assets/background/
     - assets/maps/
     - assets/maps/mossy-tileset/
     - assets/maps/mossy-tileset/slices/spikes/

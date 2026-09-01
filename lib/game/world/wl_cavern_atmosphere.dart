@@ -1,7 +1,6 @@
 import 'dart:math';
 import 'dart:ui';
 
-import 'package:flame/cache.dart';
 import 'package:flame/components.dart';
 import 'package:flame/game.dart';
 
@@ -14,13 +13,11 @@ class WLCavernAtmosphere {
   static Future<void> mount({
     required FlameGame game,
     required Vector2 worldSize,
-    required Images mapImages,
   }) async {
     game.camera.backdrop.add(WLCavernSky());
     await WLFarView.mount(
       world: game.world,
       worldSize: worldSize,
-      mapImages: mapImages,
     );
     await game.world.add(
       WLMoteField(
