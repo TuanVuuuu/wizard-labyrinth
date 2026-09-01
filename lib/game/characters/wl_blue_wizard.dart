@@ -29,6 +29,7 @@ class WLBlueWizard extends SpriteAnimationGroupComponent<WLWizardAnimState> {
   final WLPlayerInput _input;
   final Vector2 _velocity;
   bool _grounded = false;
+  bool _controlEnabled = true;
   int _jumpsUsed = 0;
 
   int _facing = 1;
@@ -109,11 +110,22 @@ class WLBlueWizard extends SpriteAnimationGroupComponent<WLWizardAnimState> {
     _velocity.setZero();
     _grounded = false;
     _jumpsUsed = 0;
+    _controlEnabled = true;
     setFacing(spawnPoint.facing);
     play(WLWizardAnimState.idle);
   }
 
+  void setControlEnabled(bool enabled) {
+    _controlEnabled = enabled;
+    if (!enabled) {
+      _velocity.x = 0;
+    }
+  }
+
   void _applyInput() {
+    if (!_controlEnabled) {
+      return;
+    }
     final horizontal = _input.horizontal;
     if (horizontal.abs() < WLCharacterConstants.joystickDeadZone) {
       _velocity.x = 0;

@@ -11,15 +11,24 @@ import 'input/wl_game_controls.dart';
 import 'input/wl_player_input.dart';
 import 'levels/wl_level_loader.dart';
 import 'levels/wl_player_spawn.dart';
+import 'overlays/wl_death_screen_fade.dart';
 import 'overlays/wl_game_overlay_id.dart';
 import 'world/wl_cavern_atmosphere.dart';
+
+enum _WLDeathFadePhase {
+  idle,
+  fadeOut,
+  fadeIn,
+}
 
 class WLWizardGame extends FlameGame {
   TiledComponent? _map;
   WLBlueWizard? _wizard;
   WLPlayerSpawn? _playerSpawn;
+  WLDeathScreenFade? _deathScreenFade;
   bool _isPlayerDead = false;
-  int _deathSequenceToken = 0;
+  _WLDeathFadePhase _deathFadePhase = _WLDeathFadePhase.idle;
+  double _deathFadeElapsed = 0;
   final ValueNotifier<int> livesNotifier =
       ValueNotifier(WLCharacterConstants.startingLives);
   final WLPlayerInput _playerInput = WLPlayerInput();
@@ -57,12 +66,15 @@ class WLWizardGame extends FlameGame {
 
     await WLGameControls.mount(game: this, input: _playerInput);
 
+    final deathFade = WLDeathScreenFade();
+    _deathScreenFade = deathFade;
+    await camera.viewport.add(deathFade);
+
     _configureCamera(snapToWizard: true);
   }
 
   @override
   void onDispose() {
-    _deathSequenceToken++;
     livesNotifier.dispose();
     super.onDispose();
   }
@@ -70,7 +82,60 @@ class WLWizardGame extends FlameGame {
   @override
   void update(double dt) {
     super.update(dt);
+    _updateDeathFade(dt);
     _checkPlayerFallDeath();
+  }
+
+  void _updateDeathFade(double dt) {
+    if (_deathFadePhase == _WLDeathFadePhase.idle) {
+      return;
+    }
+
+    _deathFadeElapsed += dt;
+    switch (_deathFadePhase) {
+      case _WLDeathFadePhase.idle:
+        return;
+      case _WLDeathFadePhase.fadeOut:
+        _setDeathFadeOpacity(
+          (_deathFadeElapsed / WLCharacterConstants.deathFadeOutSeconds)
+              .clamp(0, 1),
+        );
+        if (_deathFadeElapsed < WLCharacterConstants.deathFadeOutSeconds) {
+          return;
+        }
+        if (livesNotifier.value <= 0) {
+          _setDeathFadeOpacity(1);
+          _showGameOver();
+          _deathFadePhase = _WLDeathFadePhase.idle;
+          return;
+        }
+        _respawnAtSpawn();
+        _deathFadePhase = _WLDeathFadePhase.fadeIn;
+        _deathFadeElapsed = 0;
+        return;
+      case _WLDeathFadePhase.fadeIn:
+        _setDeathFadeOpacity(
+          1 -
+              (_deathFadeElapsed / WLCharacterConstants.deathFadeInSeconds)
+                  .clamp(0, 1),
+        );
+        if (_deathFadeElapsed < WLCharacterConstants.deathFadeInSeconds) {
+          return;
+        }
+        _setDeathFadeOpacity(0);
+        _wizard?.setControlEnabled(true);
+        _isPlayerDead = false;
+        _deathFadePhase = _WLDeathFadePhase.idle;
+        return;
+    }
+  }
+
+  void _setDeathFadeOpacity(double opacity) {
+    final fade = _deathScreenFade;
+    if (fade == null) {
+      return;
+    }
+    fade.opacity = opacity;
   }
 
   void _checkPlayerFallDeath() {
@@ -98,35 +163,16 @@ class WLWizardGame extends FlameGame {
 
     _isPlayerDead = true;
     _playerInput.reset();
-    pauseEngine();
+    _wizard?.setControlEnabled(false);
     livesNotifier.value -= 1;
 
-    final token = ++_deathSequenceToken;
-    Future.delayed(
-      Duration(
-        milliseconds:
-            (WLCharacterConstants.deathRespawnDelaySeconds * 1000).round(),
-      ),
-      () => _completeDeathSequence(token),
-    );
-  }
-
-  void _completeDeathSequence(int token) {
-    if (token != _deathSequenceToken) {
-      return;
-    }
-
-    if (livesNotifier.value <= 0) {
-      _showGameOver();
-      return;
-    }
-
-    _respawnAtSpawn();
-    _isPlayerDead = false;
-    resumeEngine();
+    _deathFadePhase = _WLDeathFadePhase.fadeOut;
+    _deathFadeElapsed = 0;
+    _setDeathFadeOpacity(0);
   }
 
   void _showGameOver() {
+    pauseEngine();
     overlays.remove(WLGameOverlayId.hud);
     overlays.removeAll(const [
       WLGameOverlayId.pause,
@@ -148,9 +194,11 @@ class WLWizardGame extends FlameGame {
   }
 
   void restartAfterDeath() {
-    _deathSequenceToken++;
     livesNotifier.value = WLCharacterConstants.startingLives;
     _isPlayerDead = false;
+    _deathFadePhase = _WLDeathFadePhase.idle;
+    _deathFadeElapsed = 0;
+    _setDeathFadeOpacity(0);
     _respawnAtSpawn();
     overlays.remove(WLGameOverlayId.death);
     overlays.add(WLGameOverlayId.hud);

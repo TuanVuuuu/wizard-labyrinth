@@ -39,5 +39,6 @@ class WLCharacterConstants {
   static const double defaultSpawnTileY = 8;
 
   static const int startingLives = 3;
-  static const double deathRespawnDelaySeconds = 2;
+  static const double deathFadeOutSeconds = 1;
+  static const double deathFadeInSeconds = 1;
 }
