@@ -1,13 +1,16 @@
 import 'package:flame/components.dart';
+import 'package:flame/events.dart';
 import 'package:flame/experimental.dart';
 import 'package:flame/game.dart';
 import 'package:flame_tiled/flame_tiled.dart';
-import 'package:flutter/foundation.dart';
+import 'package:flutter/services.dart';
+import 'package:flutter/widgets.dart';
 
 import '../core/wl_character_constants.dart';
 import '../core/wl_map_constants.dart';
 import 'characters/wl_blue_wizard.dart';
 import 'input/wl_game_controls.dart';
+import 'input/wl_keyboard_controls.dart';
 import 'input/wl_player_input.dart';
 import 'levels/wl_level_loader.dart';
 import 'levels/wl_player_spawn.dart';
@@ -21,7 +24,7 @@ enum _WLDeathFadePhase {
   fadeIn,
 }
 
-class WLWizardGame extends FlameGame {
+class WLWizardGame extends FlameGame with KeyboardEvents {
   TiledComponent? _map;
   WLBlueWizard? _wizard;
   WLPlayerSpawn? _playerSpawn;
@@ -123,6 +126,7 @@ class WLWizardGame extends FlameGame {
         }
         _setDeathFadeOpacity(0);
         _wizard?.setControlEnabled(true);
+        WLKeyboardControls.syncHeldKeys(_playerInput);
         _isPlayerDead = false;
         _deathFadePhase = _WLDeathFadePhase.idle;
         return;
@@ -250,7 +254,37 @@ class WLWizardGame extends FlameGame {
       WLGameOverlayId.pause,
     ]);
     overlays.add(WLGameOverlayId.hud);
+    WLKeyboardControls.syncHeldKeys(_playerInput);
     resumeEngine();
+  }
+
+  @override
+  KeyEventResult onKeyEvent(
+    KeyEvent event,
+    Set<LogicalKeyboardKey> keysPressed,
+  ) {
+    if (!WLKeyboardControls.isHandledKey(event.logicalKey)) {
+      return KeyEventResult.ignored;
+    }
+
+    if (WLKeyboardControls.isPauseKey(event.logicalKey)) {
+      if (event is KeyDownEvent) {
+        handleSystemBack();
+      }
+      return KeyEventResult.handled;
+    }
+
+    if (paused ||
+        _isPlayerDead ||
+        overlays.isActive(WLGameOverlayId.death)) {
+      return KeyEventResult.handled;
+    }
+
+    WLKeyboardControls.applyMovement(_playerInput, keysPressed);
+    if (WLKeyboardControls.shouldJump(event)) {
+      _playerInput.requestJump();
+    }
+    return KeyEventResult.handled;
   }
 
   void openExitConfirm() {

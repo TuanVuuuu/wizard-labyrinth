@@ -18,11 +18,19 @@ class WLGamePage extends StatefulWidget {
 
 class _WLGamePageState extends State<WLGamePage> {
   late final WLWizardGame _game;
+  late final FocusNode _gameFocus;
 
   @override
   void initState() {
     super.initState();
     _game = WLWizardGame();
+    _gameFocus = FocusNode();
+  }
+
+  @override
+  void dispose() {
+    _gameFocus.dispose();
+    super.dispose();
   }
 
   @override
@@ -37,6 +45,8 @@ class _WLGamePageState extends State<WLGamePage> {
       },
       child: GameWidget<WLWizardGame>(
         game: _game,
+        autofocus: true,
+        focusNode: _gameFocus,
         overlayBuilderMap: _overlayBuilders,
         initialActiveOverlays: const [WLGameOverlayId.hud],
         backgroundBuilder: _buildBackground,

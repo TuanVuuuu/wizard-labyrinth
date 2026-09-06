@@ -1,8 +1,24 @@
 import '../../core/wl_character_constants.dart';
 
 class WLPlayerInput {
-  double horizontal = 0;
+  double _touchHorizontal = 0;
+  double _keyboardHorizontal = 0;
   double jumpBufferRemaining = 0;
+
+  double get horizontal {
+    if (_keyboardHorizontal.abs() >= WLCharacterConstants.joystickDeadZone) {
+      return _keyboardHorizontal;
+    }
+    return _touchHorizontal;
+  }
+
+  void setTouchHorizontal(double value) {
+    _touchHorizontal = value;
+  }
+
+  void setKeyboardHorizontal(double value) {
+    _keyboardHorizontal = value;
+  }
 
   void requestJump() {
     jumpBufferRemaining = WLCharacterConstants.jumpBufferSeconds;
@@ -25,7 +41,8 @@ class WLPlayerInput {
   }
 
   void reset() {
-    horizontal = 0;
+    _touchHorizontal = 0;
+    _keyboardHorizontal = 0;
     jumpBufferRemaining = 0;
   }
 }

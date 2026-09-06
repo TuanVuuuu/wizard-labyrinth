@@ -6,6 +6,7 @@ import 'package:flame/input.dart';
 import 'package:flutter/material.dart' show EdgeInsets;
 
 import '../../core/wl_character_constants.dart';
+import '../../core/wl_device.dart';
 import 'wl_player_input.dart';
 
 const double _joystickSize = 132;
@@ -24,6 +25,10 @@ class WLGameControls {
     required FlameGame game,
     required WLPlayerInput input,
   }) async {
+    if (!WLDevice.shouldShowOnscreenControls) {
+      return;
+    }
+
     await game.camera.viewport.addAll([
       WLMovementJoystick(
         input: input,
@@ -73,16 +78,16 @@ class WLMovementJoystick extends JoystickComponent {
     super.update(dt);
     final axis = relativeDelta.x;
     if (axis.abs() < WLCharacterConstants.joystickDeadZone) {
-      input.horizontal = 0;
+      input.setTouchHorizontal(0);
       return;
     }
-    input.horizontal = axis.clamp(-1.0, 1.0);
+    input.setTouchHorizontal(axis.clamp(-1.0, 1.0));
   }
 
   @override
   void onDragStop() {
     super.onDragStop();
-    input.horizontal = 0;
+    input.setTouchHorizontal(0);
   }
 }
 
