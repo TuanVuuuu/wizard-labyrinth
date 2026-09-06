@@ -1,13 +1,16 @@
+import 'dart:ui';
+
 import 'package:flame/cache.dart';
 import 'package:flame/components.dart';
 import 'package:flame_tiled/flame_tiled.dart';
 
 import 'package:wizard/core/wl_deploy_config.dart';
 import 'package:wizard/core/wl_map_constants.dart';
-import 'package:wizard/game/physics/wl_tile_collision_map.dart';
+import 'package:wizard/game/levels/wl_camera_bounds_reader.dart';
 import 'package:wizard/game/levels/wl_map_images.dart';
 import 'package:wizard/game/levels/wl_map_tmx_reader.dart';
 import 'package:wizard/game/levels/wl_player_spawn.dart';
+import 'package:wizard/game/physics/wl_tile_collision_map.dart';
 
 class WLLoadedMap {
   const WLLoadedMap({
@@ -214,6 +217,11 @@ class WLLevelLoader {
 
   static WLPlayerSpawn readPlayerSpawn(TiledComponent map) {
     return WLPlayerSpawnReader.read(map);
+  }
+  
+  /// Đọc vùng giới hạn của camera từ tệp Tiled
+  static Rect readCameraBounds(TiledComponent map) {
+    return WLCameraBoundsReader.read(map);
   }
 
   static WLTileCollisionMap buildCollisionMap(TiledComponent map) {

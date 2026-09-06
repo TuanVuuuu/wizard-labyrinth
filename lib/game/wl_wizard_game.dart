@@ -1,6 +1,4 @@
-import 'package:flame/components.dart';
 import 'package:flame/events.dart';
-import 'package:flame/experimental.dart';
 import 'package:flame/game.dart';
 import 'package:flame_tiled/flame_tiled.dart';
 import 'package:flutter/services.dart';
@@ -17,16 +15,18 @@ import 'package:wizard/game/levels/wl_player_spawn.dart';
 import 'package:wizard/game/overlays/wl_death_screen_fade.dart';
 import 'package:wizard/game/overlays/wl_game_overlay_id.dart';
 import 'package:wizard/game/overlays/wl_hitbox_debug_overlay.dart';
+import 'package:wizard/game/world/wl_camera_controller.dart';
 import 'package:wizard/game/world/wl_cavern_atmosphere.dart';
 
 enum _WLDeathFadePhase {
-  idle,
-  fadeOut,
-  fadeIn,
+  idle, // Trạng thái bình thường (đang sống)
+  fadeOut, // Hiệu ứng biến mất (chết)
+  fadeIn, // Hiệu ứng hiện lại (sống lại)
 }
 
 class WLWizardGame extends FlameGame with KeyboardEvents {
   TiledComponent? _map;
+  Rect? _cameraWorldBounds; // Vùng giới hạn của camera
   WLBlueWizard? _wizard;
   WLPlayerSpawn? _playerSpawn;
   WLDeathScreenFade? _deathScreenFade;
@@ -47,6 +47,8 @@ class WLWizardGame extends FlameGame with KeyboardEvents {
     final loadedMap = await WLLevelLoader.loadZone1Slice();
     final map = loadedMap.map;
     _map = map;
+    // Đọc vùng giới hạn của camera từ tệp Tiled
+    _cameraWorldBounds = WLLevelLoader.readCameraBounds(map);
     for (final visual in loadedMap.visuals) {
       await world.add(visual);
     }
@@ -222,31 +224,28 @@ class WLWizardGame extends FlameGame with KeyboardEvents {
     super.onGameResize(size);
     _configureCamera(snapToWizard: false);
   }
-
+  
+  /// Cấu hình camera
   void _configureCamera({required bool snapToWizard}) {
-    final map = _map;
-    if (map == null || size.x <= 0 || size.y <= 0) {
+    final bounds = _cameraWorldBounds; // Vùng giới hạn của camera
+    final wizard = _wizard; // Nhân vật
+
+    // Nếu Vùng giới hạn của camera hoặc nhân vật không tồn tại, không cấu hình camera
+    if (bounds == null || wizard == null) {
       return;
     }
-
-    camera.viewfinder.anchor = Anchor.center;
-    camera.viewfinder.zoom = size.x / WLMapConstants.visibleWorldWidth;
-
-    camera.setBounds(
-      Rectangle.fromLTWH(0, 0, map.size.x, map.size.y),
-      considerViewport: true,
+    // Gắn camera vào nhân vật, kẹp khung nhìn trong map
+    WLCameraController.attach(
+      camera: camera,
+      viewSize: size,
+      worldBounds: bounds,
+      target: wizard,
+      snapToTarget: snapToWizard,
     );
-
-    final wizard = _wizard;
-    if (wizard == null) {
-      return;
-    }
-
-    if (snapToWizard) {
-      camera.follow(wizard, snap: true);
-    }
   }
-
+  
+  /// Pause game
+  /// Thực hiện reset input và thêm overlay pause
   void pauseGame() {
     if (paused || _isPlayerDead) {
       return;
@@ -256,7 +255,9 @@ class WLWizardGame extends FlameGame with KeyboardEvents {
     overlays.remove(WLGameOverlayId.hud);
     overlays.add(WLGameOverlayId.pause);
   }
-
+  
+  /// Resume game
+  /// Thực hiện xóa các overlay và khôi phục game
   void resumeGame() {
     overlays.removeAll(const [
       WLGameOverlayId.exitConfirm,
