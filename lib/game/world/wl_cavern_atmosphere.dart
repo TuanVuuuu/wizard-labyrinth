@@ -1,4 +1,3 @@
-import 'dart:math';
 import 'dart:ui';
 
 import 'package:flame/components.dart';
@@ -6,6 +5,7 @@ import 'package:flame/game.dart';
 
 import 'package:wizard/core/wl_colors.dart';
 import 'package:wizard/game/world/wl_far_view.dart';
+import 'package:wizard/game/world/wl_mote_field.dart';
 
 class WLCavernAtmosphere {
   WLCavernAtmosphere._();
@@ -22,13 +22,13 @@ class WLCavernAtmosphere {
     await game.world.add(
       WLMoteField(
         worldSize: worldSize,
-        count: 36,
+        count: 72, // Số lượng mote
         minRadius: 8,
         maxRadius: 22,
-        minOpacity: 0.10,
-        maxOpacity: 0.28,
-        minDrift: 6,
-        maxDrift: 16,
+        minOpacity: 0.14,
+        maxOpacity: 0.34,
+        minDrift: 12, // Tốc độ lơ lửng nhỏ nhất
+        maxDrift: 28, // Tốc độ lơ lửng lớn nhất
         seed: 3,
         priority: -22,
       ),
@@ -36,13 +36,13 @@ class WLCavernAtmosphere {
     await game.world.add(
       WLMoteField(
         worldSize: worldSize,
-        count: 48,
+        count: 96,
         minRadius: 2.5,
         maxRadius: 7,
-        minOpacity: 0.14,
-        maxOpacity: 0.40,
-        minDrift: 12,
-        maxDrift: 30,
+        minOpacity: 0.20,
+        maxOpacity: 0.52,
+        minDrift: 24,
+        maxDrift: 58,
         seed: 11,
         priority: 8,
       ),
@@ -106,91 +106,4 @@ class WLVignette extends Component with HasGameReference<FlameGame> {
         ),
     );
   }
-}
-
-class WLMoteField extends Component {
-  WLMoteField({
-    required this.worldSize,
-    this.count = 56,
-    this.minRadius = 3.5,
-    this.maxRadius = 10.5,
-    this.minOpacity = 0.12,
-    this.maxOpacity = 0.47,
-    this.minDrift = 12,
-    this.maxDrift = 40,
-    int seed = 11,
-    int priority = 8,
-  })  : _rng = Random(seed),
-        super(priority: priority);
-
-  final Vector2 worldSize;
-  final int count;
-  final double minRadius;
-  final double maxRadius;
-  final double minOpacity;
-  final double maxOpacity;
-  final double minDrift;
-  final double maxDrift;
-  final Random _rng;
-  final List<_WLMote> _motes = [];
-  final Paint _paint = Paint()..blendMode = BlendMode.plus;
-
-  @override
-  Future<void> onLoad() async {
-    for (var i = 0; i < count; i++) {
-      _motes.add(_WLMote.spawn(this, _rng));
-    }
-  }
-
-  @override
-  void update(double dt) {
-    for (final mote in _motes) {
-      mote.y -= mote.drift * dt;
-      mote.x += mote.sway * dt;
-      if (mote.y < -20) {
-        mote.y = worldSize.y + 20;
-        mote.x = _rng.nextDouble() * worldSize.x;
-      }
-    }
-  }
-
-  @override
-  void render(Canvas canvas) {
-    for (final mote in _motes) {
-      _paint.color = Color.fromRGBO(230, 255, 255, mote.opacity);
-      canvas.drawCircle(Offset(mote.x, mote.y), mote.radius, _paint);
-    }
-  }
-}
-
-class _WLMote {
-  _WLMote({
-    required this.x,
-    required this.y,
-    required this.radius,
-    required this.opacity,
-    required this.drift,
-    required this.sway,
-  });
-
-  factory _WLMote.spawn(WLMoteField field, Random rng) {
-    return _WLMote(
-      x: rng.nextDouble() * field.worldSize.x,
-      y: rng.nextDouble() * field.worldSize.y,
-      radius: field.minRadius +
-          rng.nextDouble() * (field.maxRadius - field.minRadius),
-      opacity: field.minOpacity +
-          rng.nextDouble() * (field.maxOpacity - field.minOpacity),
-      drift: field.minDrift +
-          rng.nextDouble() * (field.maxDrift - field.minDrift),
-      sway: (rng.nextDouble() - 0.5) * 10,
-    );
-  }
-
-  double x;
-  double y;
-  final double radius;
-  final double opacity;
-  final double drift;
-  final double sway;
 }
