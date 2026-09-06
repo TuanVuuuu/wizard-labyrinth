@@ -13,26 +13,102 @@ class WLGameHud extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return SafeArea(
-      child: Align(
-        alignment: Alignment.topRight,
-        child: Padding(
-          padding: const EdgeInsets.only(
-            top: WLGameControls.hudMargin * 0.4,
-            right: WLGameControls.hudMargin * 0.7,
-          ),
-          child: Row(
-            mainAxisSize: MainAxisSize.min,
-            children: [
-              ValueListenableBuilder<int>(
-                valueListenable: game.livesNotifier,
-                builder: (context, lives, _) {
-                  return _WLLivesIndicator(lives: lives);
-                },
-              ),
-              const SizedBox(width: 12),
-              _WLPauseHudButton(onPressed: game.pauseGame),
-            ],
-          ),
+      child: Stack(
+        children: [
+          _buildHitboxDebugSwitch(),
+          _buildStatusCluster(),
+        ],
+      ),
+    );
+  }
+
+  Widget _buildHitboxDebugSwitch() {
+    return Align(
+      alignment: Alignment.topLeft,
+      child: Padding(
+        padding: const EdgeInsets.only(
+          top: WLGameControls.hudMargin * 0.4,
+          left: WLGameControls.hudMargin * 0.7,
+        ),
+        child: ValueListenableBuilder<bool>(
+          valueListenable: game.hitboxDebugNotifier,
+          builder: (context, enabled, _) {
+            return _WLHitboxDebugSwitch(
+              enabled: enabled,
+              onChanged: (value) {
+                game.hitboxDebugNotifier.value = value;
+              },
+            );
+          },
+        ),
+      ),
+    );
+  }
+
+  Widget _buildStatusCluster() {
+    return Align(
+      alignment: Alignment.topRight,
+      child: Padding(
+        padding: const EdgeInsets.only(
+          top: WLGameControls.hudMargin * 0.4,
+          right: WLGameControls.hudMargin * 0.7,
+        ),
+        child: Row(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            ValueListenableBuilder<int>(
+              valueListenable: game.livesNotifier,
+              builder: (context, lives, _) {
+                return _WLLivesIndicator(lives: lives);
+              },
+            ),
+            const SizedBox(width: 12),
+            _WLPauseHudButton(onPressed: game.pauseGame),
+          ],
+        ),
+      ),
+    );
+  }
+}
+
+class _WLHitboxDebugSwitch extends StatelessWidget {
+  const _WLHitboxDebugSwitch({
+    required this.enabled,
+    required this.onChanged,
+  });
+
+  final bool enabled;
+  final ValueChanged<bool> onChanged;
+
+  @override
+  Widget build(BuildContext context) {
+    return Material(
+      color: Colors.transparent,
+      child: Container(
+        height: 52,
+        padding: const EdgeInsets.only(left: 14, right: 8),
+        decoration: BoxDecoration(
+          color: WLColors.teal.withValues(alpha: 0.72),
+          borderRadius: BorderRadius.circular(26),
+          border: Border.all(color: WLColors.mist.withValues(alpha: 0.7)),
+        ),
+        child: Row(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            Text(
+              'Hitbox',
+              style: WLFont.small.bold,
+            ),
+            Switch(
+              value: enabled,
+              onChanged: onChanged,
+              activeThumbColor: WLColors.mist,
+              activeTrackColor: WLColors.lifeHeart,
+              inactiveThumbColor: WLColors.mist,
+              inactiveTrackColor: WLColors.cavernDeep.withValues(alpha: 0.55),
+              materialTapTargetSize: MaterialTapTargetSize.shrinkWrap,
+            ),
+          ],
         ),
       ),
     );

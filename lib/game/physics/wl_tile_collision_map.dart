@@ -207,13 +207,13 @@ class WLPlatformerPhysics {
       return _WLAxisResult(position: position);
     }
 
-    final previous = _hitboxRect(
+    final previous = hitboxRect(
       position: position,
       hitboxWidth: hitboxWidth,
       hitboxHeight: hitboxHeight,
     );
     final nextPosition = Vector2(position.x + delta, position.y);
-    final next = _hitboxRect(
+    final next = hitboxRect(
       position: nextPosition,
       hitboxWidth: hitboxWidth,
       hitboxHeight: hitboxHeight,
@@ -269,13 +269,13 @@ class WLPlatformerPhysics {
       );
     }
 
-    final previous = _hitboxRect(
+    final previous = hitboxRect(
       position: position,
       hitboxWidth: hitboxWidth,
       hitboxHeight: hitboxHeight,
     );
     final nextPosition = Vector2(position.x, position.y + delta);
-    final next = _hitboxRect(
+    final next = hitboxRect(
       position: nextPosition,
       hitboxWidth: hitboxWidth,
       hitboxHeight: hitboxHeight,
@@ -329,7 +329,7 @@ class WLPlatformerPhysics {
 
     for (var pass = 0; pass < 4; pass++) {
       var moved = false;
-      final hitbox = _hitboxRect(
+      final hitbox = hitboxRect(
         position: resolved,
         hitboxWidth: hitboxWidth,
         hitboxHeight: hitboxHeight,
@@ -440,7 +440,7 @@ class WLPlatformerPhysics {
     required List<Rect> solids,
     required double skin,
   }) {
-    final hitbox = _hitboxRect(
+    final hitbox = hitboxRect(
       position: position,
       hitboxWidth: hitboxWidth,
       hitboxHeight: hitboxHeight,
@@ -478,7 +478,7 @@ class WLPlatformerPhysics {
 
   static double min(double a, double b) => a < b ? a : b;
 
-  static Rect _hitboxRect({
+  static Rect hitboxRect({
     required Vector2 position,
     required double hitboxWidth,
     required double hitboxHeight,

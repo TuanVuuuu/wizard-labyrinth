@@ -16,6 +16,7 @@ import 'levels/wl_level_loader.dart';
 import 'levels/wl_player_spawn.dart';
 import 'overlays/wl_death_screen_fade.dart';
 import 'overlays/wl_game_overlay_id.dart';
+import 'overlays/wl_hitbox_debug_overlay.dart';
 import 'world/wl_cavern_atmosphere.dart';
 
 enum _WLDeathFadePhase {
@@ -34,6 +35,7 @@ class WLWizardGame extends FlameGame with KeyboardEvents {
   double _deathFadeElapsed = 0;
   final ValueNotifier<int> livesNotifier =
       ValueNotifier(WLCharacterConstants.startingLives);
+  final ValueNotifier<bool> hitboxDebugNotifier = ValueNotifier(false);
   final WLPlayerInput _playerInput = WLPlayerInput();
 
   int get livesRemaining => livesNotifier.value;
@@ -65,6 +67,12 @@ class WLWizardGame extends FlameGame with KeyboardEvents {
     );
     _wizard = wizard;
     await world.add(wizard);
+    await world.add(
+      WLHitboxDebugOverlay(
+        wizard: wizard,
+        visibleListenable: hitboxDebugNotifier,
+      ),
+    );
 
     await WLGameControls.mount(game: this, input: _playerInput);
 
@@ -78,6 +86,7 @@ class WLWizardGame extends FlameGame with KeyboardEvents {
   @override
   void onDispose() {
     livesNotifier.dispose();
+    hitboxDebugNotifier.dispose();
     super.onDispose();
   }
 

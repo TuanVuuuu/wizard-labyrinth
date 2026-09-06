@@ -1,3 +1,5 @@
+import 'dart:ui';
+
 import 'package:flame/components.dart';
 import 'package:flame/game.dart';
 
@@ -20,7 +22,8 @@ class WLBlueWizard extends SpriteAnimationGroupComponent<WLWizardAnimState> {
           animations: animations,
           current: WLWizardAnimState.idle,
           position: position,
-          anchor: Anchor.bottomCenter,
+          // Đặt vị trí nhân vật ở chân (Thay vì ở giữa)
+          anchor: Anchor(0.5, WLCharacterConstants.visualFeetAnchorY),
           size: Vector2.all(WLCharacterConstants.displaySize),
           priority: 10,
         );
@@ -37,6 +40,12 @@ class WLBlueWizard extends SpriteAnimationGroupComponent<WLWizardAnimState> {
   bool get isGrounded => _grounded;
 
   Vector2 get velocity => _velocity;
+
+  Rect get hitboxRect => WLPlatformerPhysics.hitboxRect(
+        position: position,
+        hitboxWidth: WLCharacterConstants.hitboxWidth,
+        hitboxHeight: WLCharacterConstants.hitboxHeight,
+      );
 
   static Future<WLBlueWizard> spawn({
     required FlameGame game,

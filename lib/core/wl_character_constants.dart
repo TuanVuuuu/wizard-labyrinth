@@ -21,6 +21,10 @@ class WLCharacterConstants {
   /// Scale cả frame gốc lên 2× tile. Body thực ≈ 556px (~109% tile 512).
   static const double displaySize = frameSize * 2;
 
+  /// Vị trí chân trong frame (ở dưới cùng). 401 = 0.783 * 512
+  static const double visualFeetYInFrame = 401;
+  static double get visualFeetAnchorY => visualFeetYInFrame / frameSize;
+
   static const double gravity = 2800; // Trọng lực
   static const double maxFallSpeed = 2000;
   static const double moveSpeed = 980;
