@@ -1,9 +1,9 @@
 import 'package:flutter/material.dart';
 
-import '../core/wl_font.dart';
-import '../routes/navigate.dart';
-import '../ui/wl_cavern_backdrop.dart';
-import '../ui/wl_menu_button.dart';
+import 'package:wizard/core/wl_font.dart';
+import 'package:wizard/routes/navigate.dart';
+import 'package:wizard/ui/wl_cavern_backdrop.dart';
+import 'package:wizard/ui/wl_menu_button.dart';
 
 class WLHomePage extends StatelessWidget {
   const WLHomePage({super.key});

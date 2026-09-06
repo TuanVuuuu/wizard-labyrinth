@@ -3,12 +3,17 @@ import 'dart:ui';
 import 'package:flame/components.dart';
 import 'package:flame/game.dart';
 
-import '../../core/wl_character_constants.dart';
-import '../input/wl_player_input.dart';
-import '../levels/wl_player_spawn.dart';
-import '../physics/wl_tile_collision_map.dart';
-import 'wl_wizard_animations.dart';
+import 'package:wizard/core/wl_character_constants.dart';
+import 'package:wizard/game/input/wl_player_input.dart';
+import 'package:wizard/game/levels/wl_player_spawn.dart';
+import 'package:wizard/game/physics/wl_platformer_physics.dart';
+import 'package:wizard/game/physics/wl_tile_collision_map.dart';
+import 'package:wizard/game/characters/wl_wizard_animations.dart';
 
+
+/// Nhân vật chính trong game
+/// Sử dụng SpriteAnimationGroupComponent để quản lý các trạng thái animation
+/// Sử dụng WLPlatformerPhysics để xử lý vật lý
 class WLBlueWizard extends SpriteAnimationGroupComponent<WLWizardAnimState> {
   WLBlueWizard({
     required Map<WLWizardAnimState, SpriteAnimation> animations,

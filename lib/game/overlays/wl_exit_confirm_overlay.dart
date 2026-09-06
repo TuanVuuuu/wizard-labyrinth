@@ -1,9 +1,9 @@
 import 'package:flutter/material.dart';
 
-import '../../routes/navigate.dart';
-import '../../ui/wl_menu_button.dart';
-import '../../ui/wl_menu_overlay.dart';
-import '../wl_wizard_game.dart';
+import 'package:wizard/routes/navigate.dart';
+import 'package:wizard/ui/wl_menu_button.dart';
+import 'package:wizard/ui/wl_menu_overlay.dart';
+import 'package:wizard/game/wl_wizard_game.dart';
 
 class WLExitConfirmOverlay extends StatelessWidget {
   const WLExitConfirmOverlay({super.key, required this.game});

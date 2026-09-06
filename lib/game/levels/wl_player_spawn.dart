@@ -1,8 +1,8 @@
 import 'package:flame/components.dart';
 import 'package:flame_tiled/flame_tiled.dart';
 
-import '../../core/wl_character_constants.dart';
-import '../../core/wl_map_constants.dart';
+import 'package:wizard/core/wl_character_constants.dart';
+import 'package:wizard/core/wl_map_constants.dart';
 
 class WLPlayerSpawn {
   const WLPlayerSpawn({

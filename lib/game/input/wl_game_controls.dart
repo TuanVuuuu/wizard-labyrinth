@@ -4,10 +4,9 @@ import 'package:flame/components.dart';
 import 'package:flame/game.dart';
 import 'package:flame/input.dart';
 import 'package:flutter/material.dart' show EdgeInsets;
-
-import '../../core/wl_character_constants.dart';
-import '../../core/wl_device.dart';
-import 'wl_player_input.dart';
+import 'package:wizard/core/wl_character_constants.dart';
+import 'package:wizard/core/wl_device.dart';
+import 'package:wizard/game/input/wl_player_input.dart';
 
 const double _joystickSize = 132;
 const double _joystickKnobRadius = 26;

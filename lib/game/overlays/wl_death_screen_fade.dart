@@ -3,7 +3,7 @@ import 'dart:ui';
 import 'package:flame/components.dart';
 import 'package:flame/game.dart';
 
-import '../../core/wl_colors.dart';
+import 'package:wizard/core/wl_colors.dart';
 
 /// Lớp phủ toàn màn hình khi chết — mờ dần / sáng dần.
 class WLDeathScreenFade extends Component with HasGameReference<FlameGame> {

@@ -3,8 +3,8 @@ import 'dart:ui';
 import 'package:flame/components.dart';
 import 'package:flutter/foundation.dart';
 
-import '../../core/wl_colors.dart';
-import '../characters/wl_blue_wizard.dart';
+import 'package:wizard/core/wl_colors.dart';
+import 'package:wizard/game/characters/wl_blue_wizard.dart';
 
 class WLHitboxDebugOverlay extends Component {
   WLHitboxDebugOverlay({

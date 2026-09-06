@@ -1,9 +1,26 @@
 ---
-description: Quy ước chung project Flutter (FVM, điều hướng, Hive, user, auth, null safety)
+description: Quy ước chung project Flutter (FVM, điều hướng, Hive, user, auth, null safety, cách giải thích, một file một class, import tuyệt đối)
 alwaysApply: true
 ---
 
 # Quy ước chung project
+
+## Cách giải thích với người dùng
+
+- Viết **tiếng Việt dễ hiểu**. Ưu tiên từ thường ngày; tránh câu dài, tránh chồng thuật ngữ.
+- Khi bắt buộc dùng **từ chuyên môn**, **từ tiếng Anh**, **tên kỹ thuật**, hoặc **viết tắt**: luôn **mở ngoặc giải thích ngay** bằng tiếng Việt đơn giản (lần đầu xuất hiện trong tin nhắn).
+- Giải thích **ngắn, đúng việc đang nói**, không giảng bài dài. Có thể nhắc lại ngoặc nếu câu sau vẫn khó hiểu nếu thiếu.
+- **Không** giả định người đọc đã biết thuật ngữ lập trình, game engine, Flutter, hay từ lóng trong code.
+
+```text
+✅ Dùng helper (hàm phụ dùng chung) để tránh copy-paste (sao chép đoạn code rồi dán sang chỗ khác).
+✅ Early return (thoát sớm khỏi hàm) giúp luồng chính phẳng, dễ đọc.
+✅ Null safety (kiểm tra giá trị “không có gì”) dùng ?. hoặc ??, không dùng !.
+
+❌ Dùng helper để tránh copy-paste.
+❌ Early return giúp luồng chính phẳng.
+❌ Null safety: dùng ?. / ??, không dùng !.
+```
 
 ## FVM và Flutter
 
@@ -14,6 +31,19 @@ alwaysApply: true
 
 - **Tách nhỏ hàm**: mỗi hàm một trách nhiệm rõ; tránh khối logic dài trong một chỗ.
 - **Tái sử dụng**: trích logic lặp thành helper/extension/service thay vì copy-paste.
+
+## Một file một class
+
+- **Một file Dart chỉ nên có một class** (một kiểu đối tượng). Cần class mới thì tạo file mới.
+- Tên file khớp class chính: `wl_login_page.dart` chứa `WLLoginPage`.
+- **Không** nhét nhiều class public (dùng được từ file khác) vào cùng một file.
+- Ngoại lệ: class **private** (tên bắt đầu `_`, chỉ dùng trong file đó) nếu nhỏ và chỉ phục vụ đúng class chính.
+
+```text
+✅ wl_login_page.dart → class WLLoginPage
+✅ wl_auth_status.dart → enum WLAuthStatus
+❌ wl_login_page.dart chứa cả WLLoginPage và WLLoginForm
+```
 
 ## Điều kiện nhiều nhánh
 
@@ -100,6 +130,20 @@ class WlLoginPage { ... }
 
 - Private (`_Private`) vẫn giữ quy ước Dart; nếu cần type public cho module, ưu tiên tên có tiền tố `WL`.
 
-## Gợi ý import / part
+## Import — đường dẫn tuyệt đối
 
-File `wl_foo.dart` thường export một class chính `WLFoo` (hoặc nhiều type `WL*` cùng domain).
+- File trong `lib/` luôn import bằng **đường dẫn tuyệt đối** (`package:wizard/...`), không dùng đường dẫn tương đối kiểu `../` hay `../../`.
+- File **cùng thư mục** cũng dùng `package:wizard/...`, không viết `import 'wl_foo.dart'`.
+- Tên package của app là **`wizard`** (trong `pubspec.yaml`).
+- Ngoại lệ: `dart:...`; thư viện ngoài (`package:flutter/...`, `package:flame/...`); `part` / `part of` (Dart bắt buộc đường dẫn tương đối).
+
+```dart
+// ✅
+import 'package:wizard/core/wl_colors.dart';
+import 'package:wizard/game/input/wl_player_input.dart';
+
+// ❌
+import '../../core/wl_colors.dart';
+import '../input/wl_player_input.dart';
+import 'wl_player_input.dart';
+```

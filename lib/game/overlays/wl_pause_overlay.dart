@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
 
-import '../../ui/wl_menu_button.dart';
-import '../../ui/wl_menu_overlay.dart';
-import '../wl_wizard_game.dart';
+import 'package:wizard/ui/wl_menu_button.dart';
+import 'package:wizard/ui/wl_menu_overlay.dart';
+import 'package:wizard/game/wl_wizard_game.dart';
 
 class WLPauseOverlay extends StatelessWidget {
   const WLPauseOverlay({super.key, required this.game});

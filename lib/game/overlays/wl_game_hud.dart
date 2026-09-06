@@ -1,9 +1,9 @@
 import 'package:flutter/material.dart';
 
-import '../../core/wl_colors.dart';
-import '../../core/wl_font.dart';
-import '../input/wl_game_controls.dart';
-import '../wl_wizard_game.dart';
+import 'package:wizard/core/wl_colors.dart';
+import 'package:wizard/core/wl_font.dart';
+import 'package:wizard/game/input/wl_game_controls.dart';
+import 'package:wizard/game/wl_wizard_game.dart';
 
 class WLGameHud extends StatelessWidget {
   const WLGameHud({super.key, required this.game});

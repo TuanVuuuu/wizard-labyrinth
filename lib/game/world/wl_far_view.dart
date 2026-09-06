@@ -1,10 +1,8 @@
-import 'dart:ui';
-
 import 'package:flame/cache.dart';
 import 'package:flame/components.dart';
 
-import '../../core/wl_map_constants.dart';
-import 'wl_panorama_layer.dart';
+import 'package:wizard/core/wl_map_constants.dart';
+import 'package:wizard/game/world/wl_panorama_layer.dart';
 
 class WLFarView {
   WLFarView._();

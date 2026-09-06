@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
-
-import 'wl_colors.dart';
+import 'package:wizard/core/wl_colors.dart';
 
 class WLFont {
   WLFont._();

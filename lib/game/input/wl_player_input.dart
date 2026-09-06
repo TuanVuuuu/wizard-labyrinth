@@ -1,4 +1,4 @@
-import '../../core/wl_character_constants.dart';
+import 'package:wizard/core/wl_character_constants.dart';
 
 class WLPlayerInput {
   double _touchHorizontal = 0;

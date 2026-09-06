@@ -1,7 +1,6 @@
 import 'package:flame/cache.dart';
 import 'package:flame/components.dart';
-
-import '../../core/wl_character_constants.dart';
+import 'package:wizard/core/wl_character_constants.dart';
 
 enum WLWizardAnimState { idle, walk, jump }
 

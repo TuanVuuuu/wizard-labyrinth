@@ -1,10 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 
-import 'core/wl_colors.dart';
-import 'pages/wl_game_page.dart';
-import 'pages/wl_home_page.dart';
-import 'routes/navigate.dart';
+import 'package:wizard/core/wl_colors.dart';
+import 'package:wizard/pages/wl_game_page.dart';
+import 'package:wizard/pages/wl_home_page.dart';
+import 'package:wizard/routes/navigate.dart';
 
 Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();

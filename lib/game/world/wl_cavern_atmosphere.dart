@@ -4,8 +4,8 @@ import 'dart:ui';
 import 'package:flame/components.dart';
 import 'package:flame/game.dart';
 
-import '../../core/wl_colors.dart';
-import 'wl_far_view.dart';
+import 'package:wizard/core/wl_colors.dart';
+import 'package:wizard/game/world/wl_far_view.dart';
 
 class WLCavernAtmosphere {
   WLCavernAtmosphere._();

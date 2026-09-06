@@ -1,6 +1,6 @@
 import 'package:flutter/services.dart';
 
-import 'wl_player_input.dart';
+import 'package:wizard/game/input/wl_player_input.dart';
 
 class WLKeyboardControls {
   WLKeyboardControls._();

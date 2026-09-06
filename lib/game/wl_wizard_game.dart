@@ -6,18 +6,18 @@ import 'package:flame_tiled/flame_tiled.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter/widgets.dart';
 
-import '../core/wl_character_constants.dart';
-import '../core/wl_map_constants.dart';
-import 'characters/wl_blue_wizard.dart';
-import 'input/wl_game_controls.dart';
-import 'input/wl_keyboard_controls.dart';
-import 'input/wl_player_input.dart';
-import 'levels/wl_level_loader.dart';
-import 'levels/wl_player_spawn.dart';
-import 'overlays/wl_death_screen_fade.dart';
-import 'overlays/wl_game_overlay_id.dart';
-import 'overlays/wl_hitbox_debug_overlay.dart';
-import 'world/wl_cavern_atmosphere.dart';
+import 'package:wizard/core/wl_character_constants.dart';
+import 'package:wizard/core/wl_map_constants.dart';
+import 'package:wizard/game/characters/wl_blue_wizard.dart';
+import 'package:wizard/game/input/wl_game_controls.dart';
+import 'package:wizard/game/input/wl_keyboard_controls.dart';
+import 'package:wizard/game/input/wl_player_input.dart';
+import 'package:wizard/game/levels/wl_level_loader.dart';
+import 'package:wizard/game/levels/wl_player_spawn.dart';
+import 'package:wizard/game/overlays/wl_death_screen_fade.dart';
+import 'package:wizard/game/overlays/wl_game_overlay_id.dart';
+import 'package:wizard/game/overlays/wl_hitbox_debug_overlay.dart';
+import 'package:wizard/game/world/wl_cavern_atmosphere.dart';
 
 enum _WLDeathFadePhase {
   idle,

@@ -2,12 +2,12 @@ import 'package:flame/cache.dart';
 import 'package:flame/components.dart';
 import 'package:flame_tiled/flame_tiled.dart';
 
-import '../../core/wl_deploy_config.dart';
-import '../../core/wl_map_constants.dart';
-import '../physics/wl_tile_collision_map.dart';
-import 'wl_map_images.dart';
-import 'wl_map_tmx_reader.dart';
-import 'wl_player_spawn.dart';
+import 'package:wizard/core/wl_deploy_config.dart';
+import 'package:wizard/core/wl_map_constants.dart';
+import 'package:wizard/game/physics/wl_tile_collision_map.dart';
+import 'package:wizard/game/levels/wl_map_images.dart';
+import 'package:wizard/game/levels/wl_map_tmx_reader.dart';
+import 'package:wizard/game/levels/wl_player_spawn.dart';
 
 class WLLoadedMap {
   const WLLoadedMap({

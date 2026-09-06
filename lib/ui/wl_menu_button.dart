@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 
-import '../core/wl_colors.dart';
-import '../core/wl_font.dart';
+import 'package:wizard/core/wl_colors.dart';
+import 'package:wizard/core/wl_font.dart';
 
 enum WLMenuButtonVariant { primary, secondary }
 
