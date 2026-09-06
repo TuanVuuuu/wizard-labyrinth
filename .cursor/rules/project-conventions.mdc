@@ -1,5 +1,5 @@
 ---
-description: Quy ước chung project Flutter (FVM, điều hướng, Hive, user, auth, null safety, cách giải thích, một file một class, import tuyệt đối)
+description: Quy ước chung project Flutter (FVM, điều hướng, Hive, user, auth, null safety, cách giải thích, một file một class, import tuyệt đối, tách method, if return)
 alwaysApply: true
 ---
 
@@ -29,8 +29,32 @@ alwaysApply: true
 
 ## Cấu trúc code
 
-- **Tách nhỏ hàm**: mỗi hàm một trách nhiệm rõ; tránh khối logic dài trong một chỗ.
-- **Tái sử dụng**: trích logic lặp thành helper/extension/service thay vì copy-paste.
+- **Tái sử dụng**: trích logic lặp thành helper (hàm phụ dùng chung) / extension / service thay vì copy-paste (sao chép đoạn code rồi dán sang chỗ khác).
+
+## Tách method
+
+- **Mỗi method (hàm) chỉ làm một việc**. Tên hàm nói đúng việc đó.
+- Hàm **không được dài**. Khoảng **20–30 dòng logic** là giới hạn; dài hơn thì tách thành hàm phụ (thường là private, tên bắt đầu `_`).
+- Có nhiều bước tuần tự (tính toán → kiểm tra → cập nhật) thì **mỗi bước một hàm**, hàm chính chỉ gọi lần lượt.
+- Widget (màn hình / khối giao diện): tách `_buildHeader`, `_buildTitle`, `_buildBody`, … — không nhét cả giao diện vào một `build`.
+- Áp dụng cho **code mới** và **đoạn đang sửa**. Không tự sửa cả file nếu người dùng không yêu cầu.
+
+```dart
+// ❌ một hàm làm nhiều việc, quá dài
+void update(Player player) {
+  // kiểm tra sống/chết, nhảy, rơi, va chạm, animation... tất cả ở đây
+}
+
+// ✅ hàm chính ngắn, gọi hàm phụ
+void update(Player player) {
+  if (!player.isAlive) {
+    _respawn(player);
+    return;
+  }
+  _move(player);
+  _resolveCollision(player);
+}
+```
 
 ## Một file một class
 
@@ -45,15 +69,41 @@ alwaysApply: true
 ❌ wl_login_page.dart chứa cả WLLoginPage và WLLoginForm
 ```
 
-## Điều kiện nhiều nhánh
+## Hạn chế if/else — dùng if return
 
-- Ưu tiên sử dụng **`switch case`** thay vì chuỗi **`if/else if/else`** khi xử lý nhiều nhánh theo cùng một biến/giá trị.
-- Dùng `if/else` cho các điều kiện phạm vi (range), điều kiện kết hợp phức tạp, hoặc khi không phù hợp với `switch`.
+- **Không** viết `if/else` lồng nhau. **Không** dùng `else` sau khi nhánh `if` đã `return`.
+- Ưu tiên **`if` + `return` sớm** (thoát khỏi hàm ngay khi điều kiện phụ / không hợp lệ). Luồng chính của hàm nằm phẳng ở dưới, không thụt vào trong `else`.
+- Nhiều nhánh theo **cùng một biến/giá trị**: dùng **`switch`**, không dùng chuỗi `if/else if/else`.
+- `if/else` chỉ khi **hai nhánh đều làm việc thật** và **không thể return sớm** (ví dụ gán một trong hai giá trị rồi tiếp tục).
+- Code mới và đoạn đang sửa phải theo quy ước này.
 
-## Early return
+```dart
+// ❌ if/else lồng, luồng chính thụt sâu
+void update(Player player) {
+  if (player.isAlive) {
+    if (player.onGround) {
+      player.jump();
+    } else {
+      player.fall();
+    }
+  } else {
+    player.respawn();
+  }
+}
 
-- Ưu tiên viết **`if` + `return` sớm** (guard clause) để thoát sớm trong hàm, thay vì dùng nhiều lớp **`if/else`** lồng nhau.
-- Mục tiêu là giữ luồng chính của hàm phẳng, dễ đọc và dễ bảo trì.
+// ✅ if return sớm, không cần else
+void update(Player player) {
+  if (!player.isAlive) {
+    player.respawn();
+    return;
+  }
+  if (!player.onGround) {
+    player.fall();
+    return;
+  }
+  player.jump();
+}
+```
 
 ## Text style (WLFont)
 

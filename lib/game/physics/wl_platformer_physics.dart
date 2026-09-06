@@ -22,7 +22,9 @@ class WLPlatformerPhysics {
     required double maxFallSpeed,
     required double skin,
   }) {
+    // Vị trí mới sau khi di chuyển
     var nextPosition = position.clone();
+    // Vận tốc mới sau khi di chuyển
     var nextVelocity = velocity.clone();
 
     if (!grounded) {
@@ -65,7 +67,9 @@ class WLPlatformerPhysics {
         nextVelocity.y = 0;
       }
     }
-
+    // Vị trí trước khi di chuyển
+    final beforePenetration = nextPosition.clone();
+    // Đẩy ra khỏi tường
     nextPosition = _resolvePenetration(
       position: nextPosition,
       hitboxWidth: hitboxWidth,
@@ -73,6 +77,10 @@ class WLPlatformerPhysics {
       solids: solids,
       skin: skin,
     );
+    // Nếu vị trí mới sau khi di chuyển cao hơn vị trí trước khi di chuyển và vận tốc y âm, đẩy lên
+    if (nextPosition.y > beforePenetration.y && nextVelocity.y < 0) {
+      nextVelocity.y = 0;
+    }
 
     final nextGrounded = _isGrounded(
       position: nextPosition,
@@ -236,25 +244,37 @@ class WLPlatformerPhysics {
         hitboxWidth: hitboxWidth,
         hitboxHeight: hitboxHeight,
       );
-
+      // Lặp qua các khối đặc
       for (final solid in solids) {
+        // Nếu khối đặc không chồng lên hitbox, không cần xử lý
         if (!_hitboxesOverlap(hitbox, solid)) {
           continue;
         }
-
+        // Tính độ chồng theo ngang và dọc
         final overlapX = _overlapAmount(hitbox, solid, horizontal: true);
         final overlapY = _overlapAmount(hitbox, solid, horizontal: false);
+        // Nếu không có độ chồng, không cần xử lý
         if (overlapX <= 0 && overlapY <= 0) {
           continue;
         }
-
+        // Kiểm tra chân nhân vật có đứng trên khối đặc không
         final feetOnTop = resolved.y <= solid.top + skin &&
             resolved.y >= solid.top - skin &&
             hitbox.right > solid.left + skin &&
             hitbox.left < solid.right - skin;
 
-        if (feetOnTop || overlapY <= overlapX) {
+        // Tính vị trí tâm của hitbox
+        final hitboxCenterY = resolved.y - hitboxHeight / 2;
+        // Kiểm tra nhân vật có ở trên khối đặc không
+        final isAboveSolid = hitboxCenterY < solid.center.dy;
+        // Tính vị trí mới sau khi đẩy ra khỏi tường
+        final snappedY = isAboveSolid ? solid.top : solid.bottom + hitboxHeight;
+
+        // Nếu chân nhân vật đứng trên khối đặc, đẩy lên trên
+        if (feetOnTop) {
           resolved.y = solid.top;
+        } else if (overlapY <= overlapX) {
+          resolved.y = snappedY;
         } else if (overlapX < overlapY) {
           if (resolved.x < solid.center.dx) {
             resolved.x = solid.left - hitboxWidth / 2;
@@ -262,11 +282,7 @@ class WLPlatformerPhysics {
             resolved.x = solid.right + hitboxWidth / 2;
           }
         } else {
-          if (resolved.y < solid.center.dy) {
-            resolved.y = solid.top;
-          } else {
-            resolved.y = solid.bottom + hitboxHeight;
-          }
+          resolved.y = snappedY;
         }
         moved = true;
         break;
@@ -326,16 +342,17 @@ class WLPlatformerPhysics {
     Rect solid,
     double skin,
   ) {
-    if (next.top >= solid.bottom - skin) {
-      return false;
-    }
-    if (previous.top < solid.bottom - skin) {
-      return false;
-    }
     if (next.right <= solid.left + skin || next.left >= solid.right - skin) {
       return false;
     }
-    return true;
+    if (next.top >= solid.bottom) {
+      return false;
+    }
+    if (previous.bottom <= solid.top + skin) {
+      return false;
+    }
+    return previous.top >= solid.bottom - skin ||
+        previous.bottom > solid.bottom;
   }
 
   /// True nếu chân nhân vật đang đứng trên một khối đặc.
@@ -414,8 +431,10 @@ class _WLAxisResult {
 
   /// Vị trí mới sau khi di chuyển
   final Vector2 position;
+
   /// Có đang đứng đất hay không
   final bool grounded;
+
   /// Có bị chặn hay không (đụng tường hoặc nền => để dừng di chuyển)
   final bool blocked;
 }
