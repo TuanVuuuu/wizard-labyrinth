@@ -1,3 +1,4 @@
+import 'package:flutter/foundation.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:wizard/game/wl_wizard_game.dart';
 import 'package:wizard/main.dart';
@@ -12,5 +13,14 @@ void main() {
     await tester.pumpWidget(const WLApp());
     expect(find.byType(WLHomePage), findsOneWidget);
     expect(find.text('Play'), findsOneWidget);
+  });
+
+  testWidgets('web game button shows on mobile app', (tester) async {
+    debugDefaultTargetPlatformOverride = TargetPlatform.iOS;
+    addTearDown(() {
+      debugDefaultTargetPlatformOverride = null;
+    });
+    await tester.pumpWidget(const WLApp());
+    expect(find.text('Web game'), findsOneWidget);
   });
 }

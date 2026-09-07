@@ -6,4 +6,6 @@ class WLDeployConfig {
     'WL_DEPLOY_VERSION',
     defaultValue: 'dev',
   );
+
+  static const String webGameUrl = 'https://wizardlabyrinth-9b1c2.web.app';
 }

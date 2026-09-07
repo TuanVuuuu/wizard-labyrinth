@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 
+import 'package:wizard/core/wl_device.dart';
 import 'package:wizard/core/wl_font.dart';
 import 'package:wizard/routes/navigate.dart';
 import 'package:wizard/ui/wl_cavern_backdrop.dart';
@@ -31,6 +32,7 @@ class WLHomePage extends StatelessWidget {
             _buildTitle(),
             const SizedBox(height: 36),
             _buildPlayButton(context),
+            if (WLDevice.isNativeMobile) ..._buildWebGameAction(context),
           ],
         ),
       ),
@@ -46,11 +48,34 @@ class WLHomePage extends StatelessWidget {
   }
 
   Widget _buildPlayButton(BuildContext context) {
+    return _buildMenuButton(
+      label: 'Play',
+      onPressed: () => WLNavigate.toGame(context),
+    );
+  }
+
+  List<Widget> _buildWebGameAction(BuildContext context) {
+    return [
+      const SizedBox(height: 12),
+      _buildMenuButton(
+        label: 'Web game',
+        variant: WLMenuButtonVariant.secondary,
+        onPressed: () => WLNavigate.toWebGame(context),
+      ),
+    ];
+  }
+
+  Widget _buildMenuButton({
+    required String label,
+    required VoidCallback onPressed,
+    WLMenuButtonVariant variant = WLMenuButtonVariant.primary,
+  }) {
     return ConstrainedBox(
       constraints: const BoxConstraints(maxWidth: 280),
       child: WLMenuButton(
-        label: 'Play',
-        onPressed: () => WLNavigate.toGame(context),
+        label: label,
+        variant: variant,
+        onPressed: onPressed,
       ),
     );
   }

@@ -26,6 +26,8 @@ class WLDevice {
 
   static bool get isMobileWeb => isWeb && isMobile;
 
+  static bool get isNativeMobile => !isWeb && isMobile;
+
   /// Chỉ hiển thị nút điều khiển trên thiết bị di động
   static bool get shouldShowOnscreenControls => isMobile;
 }

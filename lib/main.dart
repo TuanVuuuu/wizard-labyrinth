@@ -4,6 +4,7 @@ import 'package:flutter/services.dart';
 import 'package:wizard/core/wl_colors.dart';
 import 'package:wizard/pages/wl_game_page.dart';
 import 'package:wizard/pages/wl_home_page.dart';
+import 'package:wizard/pages/wl_web_game_page.dart';
 import 'package:wizard/routes/navigate.dart';
 
 Future<void> main() async {
@@ -34,6 +35,7 @@ class WLApp extends StatelessWidget {
       routes: {
         WLNavigate.home: (_) => const WLHomePage(),
         WLNavigate.game: (_) => const WLGamePage(),
+        WLNavigate.webGame: (_) => const WLWebGamePage(),
       },
     );
   }
