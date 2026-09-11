@@ -9,6 +9,8 @@ import 'package:wizard/core/wl_map_constants.dart';
 import 'package:wizard/game/levels/wl_camera_bounds_reader.dart';
 import 'package:wizard/game/levels/wl_map_images.dart';
 import 'package:wizard/game/levels/wl_map_tmx_reader.dart';
+import 'package:wizard/game/levels/wl_level_exit.dart';
+import 'package:wizard/game/levels/wl_level_exit_reader.dart';
 import 'package:wizard/game/levels/wl_player_spawn.dart';
 import 'package:wizard/game/physics/wl_tile_collision_map.dart';
 
@@ -218,7 +220,11 @@ class WLLevelLoader {
   static WLPlayerSpawn readPlayerSpawn(TiledComponent map) {
     return WLPlayerSpawnReader.read(map);
   }
-  
+
+  static WLLevelExit? readLevelExit(TiledComponent map) {
+    return WLLevelExitReader.read(map);
+  }
+
   /// Đọc vùng giới hạn của camera từ tệp Tiled
   static Rect readCameraBounds(TiledComponent map) {
     return WLCameraBoundsReader.read(map);

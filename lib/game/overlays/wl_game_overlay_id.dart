@@ -8,4 +8,6 @@ class WLGameOverlayId {
   static const String exitConfirm = 'exitConfirm';
   // Dùng để hiển thị overlay khi nhân vật chết
   static const String death = 'death';
+  // Dùng để hiển thị overlay khi qua màn
+  static const String levelClear = 'levelClear';
 }

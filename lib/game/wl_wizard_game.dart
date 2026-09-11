@@ -10,6 +10,7 @@ import 'package:wizard/game/characters/wl_blue_wizard.dart';
 import 'package:wizard/game/input/wl_game_controls.dart';
 import 'package:wizard/game/input/wl_keyboard_controls.dart';
 import 'package:wizard/game/input/wl_player_input.dart';
+import 'package:wizard/game/levels/wl_level_exit.dart';
 import 'package:wizard/game/levels/wl_level_loader.dart';
 import 'package:wizard/game/levels/wl_player_spawn.dart';
 import 'package:wizard/game/overlays/wl_death_screen_fade.dart';
@@ -29,8 +30,10 @@ class WLWizardGame extends FlameGame with KeyboardEvents {
   Rect? _cameraWorldBounds; // Vùng giới hạn của camera
   WLBlueWizard? _wizard;
   WLPlayerSpawn? _playerSpawn;
+  WLLevelExit? _levelExit;
   WLDeathScreenFade? _deathScreenFade;
   bool _isPlayerDead = false;
+  bool _isLevelCleared = false;
   _WLDeathFadePhase _deathFadePhase = _WLDeathFadePhase.idle;
   double _deathFadeElapsed = 0;
   final ValueNotifier<int> livesNotifier =
@@ -69,6 +72,7 @@ class WLWizardGame extends FlameGame with KeyboardEvents {
     );
     _wizard = wizard;
     await world.add(wizard);
+    _levelExit = WLLevelLoader.readLevelExit(map);
     await world.add(
       WLHitboxDebugOverlay(
         wizard: wizard,
@@ -97,6 +101,7 @@ class WLWizardGame extends FlameGame with KeyboardEvents {
     super.update(dt);
     _updateDeathFade(dt);
     _checkPlayerFallDeath();
+    _checkLevelExit();
   }
 
   void _updateDeathFade(double dt) {
@@ -153,7 +158,7 @@ class WLWizardGame extends FlameGame with KeyboardEvents {
   }
 
   void _checkPlayerFallDeath() {
-    if (_isPlayerDead) {
+    if (_isPlayerDead || _isLevelCleared) {
       return;
     }
 
@@ -170,8 +175,24 @@ class WLWizardGame extends FlameGame with KeyboardEvents {
     }
   }
 
+  void _checkLevelExit() {
+    if (_isLevelCleared || _isPlayerDead) {
+      return;
+    }
+
+    final levelExit = _levelExit;
+    final wizard = _wizard;
+    if (levelExit == null || wizard == null) {
+      return;
+    }
+    if (!wizard.hitboxRect.overlaps(levelExit.triggerRect)) {
+      return;
+    }
+    onLevelCleared();
+  }
+
   void onPlayerDeath() {
-    if (_isPlayerDead) {
+    if (_isPlayerDead || _isLevelCleared) {
       return;
     }
 
@@ -186,13 +207,28 @@ class WLWizardGame extends FlameGame with KeyboardEvents {
   }
 
   void _showGameOver() {
+    _showBlockingOverlay(WLGameOverlayId.death);
+  }
+
+  void onLevelCleared() {
+    if (_isLevelCleared || _isPlayerDead) {
+      return;
+    }
+
+    _isLevelCleared = true;
+    _playerInput.reset();
+    _wizard?.setControlEnabled(false);
+    _showBlockingOverlay(WLGameOverlayId.levelClear);
+  }
+
+  void _showBlockingOverlay(String overlayId) {
     pauseEngine();
     overlays.remove(WLGameOverlayId.hud);
     overlays.removeAll(const [
       WLGameOverlayId.pause,
       WLGameOverlayId.exitConfirm,
     ]);
-    overlays.add(WLGameOverlayId.death);
+    overlays.add(overlayId);
   }
 
   void _respawnAtSpawn() {
@@ -208,13 +244,23 @@ class WLWizardGame extends FlameGame with KeyboardEvents {
   }
 
   void restartAfterDeath() {
+    overlays.remove(WLGameOverlayId.death);
+    _resetPlayState();
+  }
+
+  void restartAfterClear() {
+    overlays.remove(WLGameOverlayId.levelClear);
+    _resetPlayState();
+  }
+
+  void _resetPlayState() {
     livesNotifier.value = WLCharacterConstants.startingLives;
     _isPlayerDead = false;
+    _isLevelCleared = false;
     _deathFadePhase = _WLDeathFadePhase.idle;
     _deathFadeElapsed = 0;
     _setDeathFadeOpacity(0);
     _respawnAtSpawn();
-    overlays.remove(WLGameOverlayId.death);
     overlays.add(WLGameOverlayId.hud);
     resumeEngine();
   }
@@ -247,7 +293,7 @@ class WLWizardGame extends FlameGame with KeyboardEvents {
   /// Pause game
   /// Thực hiện reset input và thêm overlay pause
   void pauseGame() {
-    if (paused || _isPlayerDead) {
+    if (paused || _isPlayerDead || _isLevelCleared) {
       return;
     }
     _playerInput.reset();
@@ -286,6 +332,7 @@ class WLWizardGame extends FlameGame with KeyboardEvents {
 
     if (paused ||
         _isPlayerDead ||
+        _isLevelCleared ||
         overlays.isActive(WLGameOverlayId.death)) {
       return KeyEventResult.handled;
     }
@@ -306,7 +353,8 @@ class WLWizardGame extends FlameGame with KeyboardEvents {
   }
 
   void handleSystemBack() {
-    if (overlays.isActive(WLGameOverlayId.death)) {
+    if (overlays.isActive(WLGameOverlayId.death) ||
+        overlays.isActive(WLGameOverlayId.levelClear)) {
       return;
     }
     if (overlays.isActive(WLGameOverlayId.exitConfirm)) {

@@ -6,6 +6,7 @@ import 'package:wizard/game/overlays/wl_death_overlay.dart';
 import 'package:wizard/game/overlays/wl_exit_confirm_overlay.dart';
 import 'package:wizard/game/overlays/wl_game_hud.dart';
 import 'package:wizard/game/overlays/wl_game_overlay_id.dart';
+import 'package:wizard/game/overlays/wl_level_clear_overlay.dart';
 import 'package:wizard/game/overlays/wl_pause_overlay.dart';
 import 'package:wizard/game/wl_wizard_game.dart';
 
@@ -62,6 +63,8 @@ class _WLGamePageState extends State<WLGamePage> {
       WLGameOverlayId.exitConfirm: (context, game) =>
           WLExitConfirmOverlay(game: game),
       WLGameOverlayId.death: (context, game) => WLDeathOverlay(game: game),
+      WLGameOverlayId.levelClear: (context, game) =>
+          WLLevelClearOverlay(game: game),
     };
   }
 
